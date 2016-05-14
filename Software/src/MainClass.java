@@ -86,22 +86,12 @@ public class MainClass {
             //Filling tiles with different colors
             for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
         		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
-        			
-        			//Choose color according to Tile's state
-        			switch(tilesArray[xpos][ypos].getState()){
-        			case "wall":
-        				g.setColor(Color.GRAY);
-        				break;
-        			case "road":
-        				g.setColor(Color.GREEN);
-        				break;
+        			if (tilesArray[xpos][ypos].getState()=="wall"){
+        				int cellX = 10 + (xpos * 10);
+                        int cellY = 10 + (ypos * 10);
+                        g.setColor(Color.RED);
+                        g.fillRect(cellX, cellY, 10, 10);
         			}
-        			
-        			//Fill the Tile
-    				int cellX = 10 + (xpos * 10);
-                    int cellY = 10 + (ypos * 10);
-                    g.setColor(Color.RED);
-                    g.fillRect(cellX, cellY, 10, 10);
             	}
         	}
         	
