@@ -96,14 +96,17 @@ public class MainClass {
         	}
         	
             //Draws basic black grid
+            int TileSize = MainClass.tileSize;
+            int MazeHeight = MainClass.mazeSizeHeight;
+            int MazeWidth = MainClass.mazeSizeWidth;
             g.setColor(Color.BLACK);
-            g.drawRect (MainClass.tileSize, MainClass.tileSize, MainClass.mazeSizeWidth*MainClass.tileSize, MainClass.mazeSizeHeight*MainClass.tileSize);
+            g.drawRect (TileSize, TileSize, MazeWidth*TileSize, MazeHeight*TileSize);
 
-            for (int i = MainClass.tileSize; i <= MainClass.mazeSizeWidth*MainClass.tileSize+MainClass.tileSize; i+= MainClass.tileSize)
-                g.drawLine (i, MainClass.tileSize, i, (1+MainClass.mazeSizeHeight)*MainClass.tileSize);
+            for (int i = TileSize; i <= MazeWidth*TileSize+TileSize; i+= TileSize)
+                g.drawLine (i, TileSize, i, (1+MazeHeight)*TileSize);
 
-            for (int i = 10; i <= MainClass.mazeSizeHeight*MainClass.tileSize+MainClass.tileSize; i+= MainClass.tileSize)
-                g.drawLine (MainClass.tileSize, i, (1+MainClass.mazeSizeWidth)*MainClass.tileSize, i);
+            for (int i = 10; i <= MazeHeight*TileSize+TileSize; i+= TileSize)
+                g.drawLine (TileSize, i, (1+MazeWidth)*TileSize, i);
         }
 
         //Calls grid to be completely repainted according to TilesAraay
