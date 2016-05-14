@@ -66,13 +66,11 @@ public class MainClass {
     		
     		for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
         		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
+        			tilesArray[xpos][ypos] = new TileClass();
+        			int value = random.nextInt(10);
         			
-        			int value = random.nextInt(6);
-        			
-        			if (value <= 3){
-        				tilesArray[xpos][ypos] = new TileClass("empty");
-        			}else{
-        				tilesArray[xpos][ypos] = new TileClass("wall");
+        			if (value > 6){
+        				tilesArray[xpos][ypos].setState("wall");
         			}
         			
             	}
@@ -86,11 +84,19 @@ public class MainClass {
             //Filling tiles with different colors
             for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
         		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
-        			if (tilesArray[xpos][ypos].getState()=="wall"){
-        				int cellX = 10 + (xpos * 10);
-                        int cellY = 10 + (ypos * 10);
-                        g.setColor(Color.RED);
-                        g.fillRect(cellX, cellY, 10, 10);
+        			
+        			int cellX = 10 + (xpos * 10);
+                    int cellY = 10 + (ypos * 10);
+                    
+        			switch (tilesArray[xpos][ypos].getState()){
+        			case "wall":
+        				g.setColor(Color.RED);
+        				g.fillRect(cellX, cellY, 10, 10);
+        				break;
+        			case "start":
+        				g.setColor(Color.GREEN);
+        				g.fillRect(cellX, cellY, 10, 10);
+        				break;
         			}
             	}
         	}
@@ -117,7 +123,6 @@ public class MainClass {
     }
 	
 	public static class Generator {
-		 public List<Point> tilesArray;
 		 public int pathLength;
 		 
 		 private final Random random = new Random();
@@ -131,6 +136,7 @@ public class MainClass {
 		 public void setStartPoint(){
 			 int posX = random.nextInt(mazeSizeWidth-1);
 			 int posY = random.nextInt(mazeSizeWidth-1);
+			 tilesArray[posX][posY].setState("start");
 			 grid.repaintCells();
 		 }
 		 
