@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
@@ -42,17 +43,17 @@ public class MainClass {
 		
 		Box box_main = Box.createHorizontalBox();
 		
-		Box top_box = Box.createVerticalBox();
-		top_box.setBorder(new TitledBorder("Parameters"));
-		box_main.add(top_box);
-		
+		Box box_left = Box.createVerticalBox();
+		box_left.setBorder(new TitledBorder("Parameters"));
+		box_main.add(box_left);
+	
 		Grid grid = new Grid();
 		Box box_grid = Box.createVerticalBox();
 		box_grid.setBorder(new TitledBorder("Maze display"));
 		box_grid.add(grid);
 		//window.add(box_grid);
 		box_main.add(box_grid);
-		
+				
 		window.setContentPane(box_main);
 		
 		Generator generator = new Generator(grid);
