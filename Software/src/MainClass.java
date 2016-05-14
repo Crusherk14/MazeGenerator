@@ -8,6 +8,7 @@ import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -39,20 +40,20 @@ public class MainClass {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		
-		Box mainBox = Box.createHorizontalBox();
+		Box box_main = Box.createHorizontalBox();
 		
-		Box topBox = Box.createVerticalBox();
-		topBox.setBorder(new TitledBorder("Parameters"));
-		mainBox.add(topBox);
+		Box top_box = Box.createVerticalBox();
+		top_box.setBorder(new TitledBorder("Parameters"));
+		box_main.add(top_box);
 		
 		Grid grid = new Grid();
 		Box box_grid = Box.createVerticalBox();
 		box_grid.setBorder(new TitledBorder("Maze display"));
 		box_grid.add(grid);
 		//window.add(box_grid);
-		mainBox.add(box_grid);
+		box_main.add(box_grid);
 		
-		window.setContentPane(mainBox);
+		window.setContentPane(box_main);
 		
 		Generator generator = new Generator(grid);
 		generator.setStartPoint();
