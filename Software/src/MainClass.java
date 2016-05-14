@@ -126,8 +126,8 @@ public class MainClass {
 	        }
 	     
 		 public void setStartPoint(){
-			 int posX = random.nextInt(mazeSizeWidth-1);
-			 int posY = random.nextInt(mazeSizeWidth-1);
+			 int posX = random.nextInt(mazeSizeWidth);
+			 int posY = random.nextInt(mazeSizeWidth);
 			 grid.repaintCells();
 		 }
 		 
