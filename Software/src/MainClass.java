@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,13 +18,17 @@ import javax.swing.JComponent;
 
 public class MainClass {
 	
-	public static int mazeSizeHeight = 10;
-	public static int mazeSizeWidth = 10;
+	public static int mazeSizeWidth = 20;
+	public static int mazeSizeHeight = 20;
 	
 	public final static int tileSize = 10;
 	
 	public static JFrame window = new JFrame();
 	public static JPanel panel=new JPanel();
+	
+	public static TileClass tilesArray[][];
+	
+	public static Random random = new Random();
 	
 	
 	public static void main(String[] args){		
@@ -49,27 +54,58 @@ public class MainClass {
 		
 		window.setContentPane(mainBox);
 		
-		grid.fillCell(2, 1);	//X;Y coordinates starting from 0;0
+		Generator generator = new Generator(grid);
+		generator.setStartPoint();
 	}
 	
 	//Grid
 	public static class Grid extends JPanel {
 
-        private List<Point> fillCells;
-
         public Grid() {
-            fillCells = new ArrayList<>();
+        	tilesArray = new TileClass[mazeSizeWidth][mazeSizeHeight];
+    		
+    		for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
+        		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
+        			
+        			int value = random.nextInt(6);
+        			
+        			if (value <= 3){
+        				tilesArray[xpos][ypos] = new TileClass("empty");
+        			}else{
+        				tilesArray[xpos][ypos] = new TileClass("wall");
+        			}
+        			
+            	}
+        	}
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            for (Point fillCell : fillCells) {
-                int cellX = 10 + (fillCell.x * 10);
-                int cellY = 10 + (fillCell.y * 10);
-                g.setColor(Color.RED);
-                g.fillRect(cellX, cellY, 10, 10);
-            }
+            
+            //Filling tiles with different colors
+            for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
+        		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
+        			
+        			//Choose color according to Tile's state
+        			switch(tilesArray[xpos][ypos].getState()){
+        			case "wall":
+        				g.setColor(Color.GRAY);
+        				break;
+        			case "road":
+        				g.setColor(Color.GREEN);
+        				break;
+        			}
+        			
+        			//Fill the Tile
+    				int cellX = 10 + (xpos * 10);
+                    int cellY = 10 + (ypos * 10);
+                    g.setColor(Color.RED);
+                    g.fillRect(cellX, cellY, 10, 10);
+            	}
+        	}
+        	
+            //Draws basic black grid
             g.setColor(Color.BLACK);
             g.drawRect (MainClass.tileSize, MainClass.tileSize, MainClass.mazeSizeWidth*MainClass.tileSize, MainClass.mazeSizeHeight*MainClass.tileSize);
 
@@ -80,10 +116,34 @@ public class MainClass {
                 g.drawLine (MainClass.tileSize, i, (1+MainClass.mazeSizeWidth)*MainClass.tileSize, i);
         }
 
-        public void fillCell(int x, int y) {
-            fillCells.add(new Point(x, y));
-            repaint();
+        //Calls grid to be completely repainted according to TilesAraay
+        public void repaintCells(){
+        	repaint();
         }
 
     }
+	
+	public static class Generator {
+		 public List<Point> tilesArray;
+		 public int pathLength;
+		 
+		 private final Random random = new Random();
+		 
+		 public Grid grid;
+
+	        public Generator(Grid getGrid) {
+	            grid = getGrid;
+	        }
+	     
+		 public void setStartPoint(){
+			 int posX = random.nextInt(mazeSizeWidth-1);
+			 int posY = random.nextInt(mazeSizeWidth-1);
+			 grid.repaintCells();
+		 }
+		 
+		 public void generatePath(){
+			 
+		 }
+	        
+	}
 }
