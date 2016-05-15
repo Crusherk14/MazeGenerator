@@ -1,9 +1,9 @@
 public class TileClass {
 	
-	private String state;
+	private String state="empty";
 	
 	public TileClass(){
-		state = "empty";
+		//state = "empty";
 	}
 	
 	public String getState(){
