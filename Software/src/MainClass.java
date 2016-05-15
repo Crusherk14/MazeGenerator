@@ -64,6 +64,7 @@ public class MainClass {
 		Generator generator = new Generator(grid);
 		generator.setStartPoint();
 		*/
+		MainWindow window = new MainWindow();
 	}
 	
 	//Grid
