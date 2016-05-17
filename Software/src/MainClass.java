@@ -33,7 +33,7 @@ public class MainClass {
 	public static JPanel panel=new JPanel();
 	
 	public static TileClass tilesArray[][];
-	
+
 	public static Random random = new Random();
 	
 	
@@ -108,6 +108,10 @@ public class MainClass {
         				g.setColor(Color.GREEN);
         				g.fillRect(cellX, cellY, 10, 10);
         				break;
+        			case "path":
+        				g.setColor(Color.BLUE);
+        				g.fillRect(cellX, cellY, 10, 10);
+        				break;
         			}
             	}
         	}
@@ -132,35 +136,97 @@ public class MainClass {
     }
 	
 	public static class Generator {
-		 public int pathLength;
-		 
-		 private final Random random = new Random();
-		 
-		 public Grid grid;
-
-	        public Generator(Grid getGrid) {
-	            grid = getGrid;
-
+		public int pathLength;
+		private final Random random = new Random();
+		public Grid grid;
+		
+		
+	
+	    public Generator(Grid getGrid) {
+	     	grid = getGrid;
+	    }
+			    
+	    public void FillBorders(){
+		     	for (int xpos = 1; xpos <= mazeSizeWidth-1; xpos++){
+		     		tilesArray[xpos][0].setState("wall");
+		     		tilesArray[xpos][mazeSizeHeight-1].setState("wall");
+		        }
+		        for (int ypos = 0; ypos<mazeSizeHeight; ypos++){
+		        	tilesArray[0][ypos].setState("wall");
+		            tilesArray[mazeSizeWidth-1][ypos].setState("wall");
+		        }
 	        }
-	     
-		 public void setStartPoint(){
-			 int posX = random.nextInt(mazeSizeWidth);
-			 int posY = random.nextInt(mazeSizeHeight);
-			 tilesArray[posX][posY].setState("start");
-		 }
+	              
+	    public int[] setStartPoint(){
+	    	int startX = random.nextInt(mazeSizeWidth-2)+1;
+        	int startY = random.nextInt(mazeSizeHeight-2)+1;
+        	tilesArray[startX][startY].setState("start");
+        	int[] returnList = {startX, startY};
+			return returnList;
+        }
+			
 		 
-		 public void generateRandomMaze(){
-			 for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
-        		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
-        			int value = random.nextInt(10);
-        			
-        			if (value > 6){
-        				tilesArray[xpos][ypos].setState("wall");
-        			}
-        			
+        public class CurrentTile{
+        	private int coordinate[] = new int[2];
+        	
+        	public void setCoordinate(char coordinate, int pos){
+        		switch(coordinate){
+        			case 'x':
+        				this.coordinate[0] = pos;
+        				break;
+        			case 'y':
+	    				this.coordinate[1] = pos;
+	    				break;
         		}
-			 }
-		 }
+        	}
+        	
+        	public void setCoordinate(int pos1, int pos2){
+        		coordinate[0] = pos1;
+        		coordinate[1] = pos2;
+        	}
+        	
+        	public int getCoordinate(char coordinate){
+        		switch(coordinate){
+    			case 'x':
+    				return this.coordinate[0];
+    			case 'y':
+    				return this.coordinate[1];
+    			default:
+    				return -1;
+        	}
+        		
+        	
+        }
+        
+        	public boolean checkWall(String direction){
+        		int nextX = coordinate[0];
+        		int nextY = coordinate[1];
+        		
+        		switch(direction){
+        		case "up":
+        			nextY--;
+        			break;
+        		case "down":
+        			nextY++;
+        			break;
+        		case "left":
+        			nextX--;
+        			break;
+        		case "right":
+        			nextX++;
+        			break;
+        		}
+        		return tilesArray[nextX][nextY].getState().equals("wall");
+        	}
+        }
+        
+        public void generatePath(){
+        	CurrentTile currentTile = new CurrentTile();
+        	int[] startPointCoordinates = setStartPoint();
+    		currentTile.setCoordinate(startPointCoordinates[0], startPointCoordinates[1]);
+        }
+        
+        
 		 
 		 public void clearMaze(){
 			 for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
@@ -170,6 +236,5 @@ public class MainClass {
 	        		}
 				 }
 		 }
-	        
 	}
 }

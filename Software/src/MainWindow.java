@@ -89,9 +89,11 @@ public class MainWindow {
 				MainClass.mazeSizeHeight = Integer.parseInt(textField_Height.getText());
 				grid.initArray();
 				
-				generator.generateRandomMaze();
-				generator.setStartPoint();
+				generator.FillBorders();
+				//generator.generateRandomMaze();
+				generator.generatePath();
 				grid.repaintCells();
+				
 			}
 		});
 		Parameters.add(btnNewButton, "cell 0 0,growx,aligny center");
