@@ -91,8 +91,9 @@ public class MainWindow {
 				grid.initArray();
 				
 				generator.FillBorders();
-				//generator.generateRandomMaze();
-				generator.generatePath();
+				generator.setStartPoint();
+				
+				//generator.generatePath();
 				grid.repaintCells();
 				
 			}

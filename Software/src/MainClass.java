@@ -68,14 +68,14 @@ public class MainClass {
             
             
           //Filling tiles with different colors
-        	for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
-        		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
+        	for (int posY = 0; posY < mazeSizeHeight; posY++){
+        		for (int posX = 0; posX < mazeSizeWidth; posX++){
         			
-        			int cellX = 10 + (xpos * 10);
-                    int cellY = 10 + (ypos * 10);
+        			int cellY = 10 + (posY * 10);
+                    int cellX = 10 + (posX * 10);
                     
                     //TODO: check if tilesArray is empty at start?
-        			switch (tilesArray[xpos][ypos].getState()){
+        			switch (tilesArray[posY][posX].getState()){
         			case "wall":
         				g.setColor(Color.GRAY);	//LIGHT_GRAY / DARK_GRAY for other types of wall
         				g.fillRect(cellX, cellY, 10, 10);
@@ -100,11 +100,11 @@ public class MainClass {
         }
         
         public void initArray(){
-        	tilesArray = new TileClass[mazeSizeWidth][mazeSizeHeight];
+        	tilesArray = new TileClass[mazeSizeHeight][mazeSizeWidth];
         	
-        	for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
-        		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
-        			tilesArray[xpos][ypos] = new TileClass(ypos*mazeSizeWidth+xpos,xpos,ypos);
+        	for (int posY = 0; posY < mazeSizeHeight; posY++){
+        		for (int posX = 0; posX < mazeSizeWidth; posX++){
+        			tilesArray[posY][posX] = new TileClass(posY*mazeSizeWidth+posX,posY,posX);
             	}
         	}
         }
@@ -116,103 +116,83 @@ public class MainClass {
 		private final Random random = new Random();
 		public Grid grid;
 		
-		
-	
 	    public Generator(Grid getGrid) {
 	     	grid = getGrid;
 	    }
 			    
+	    //Main methods of Generator
+	    
+	    //Filling borders of tilesArray
 	    public void FillBorders(){
-		     	for (int xpos = 1; xpos <= mazeSizeWidth-1; xpos++){
-		     		tilesArray[xpos][0].setState("wall");
-		     		tilesArray[xpos][mazeSizeHeight-1].setState("wall");
+		     	for (int posY = 1; posY <= mazeSizeHeight-1; posY++){
+		     		tilesArray[posY][0].setState("wall");
+		     		tilesArray[posY][mazeSizeWidth-1].setState("wall");
 		        }
-		        for (int ypos = 0; ypos<mazeSizeHeight; ypos++){
-		        	tilesArray[0][ypos].setState("wall");
-		            tilesArray[mazeSizeWidth-1][ypos].setState("wall");
+		        for (int posX = 0; posX<mazeSizeWidth; posX++){
+		        	tilesArray[0][posX].setState("wall");
+		            tilesArray[mazeSizeHeight-1][posX].setState("wall");
 		        }
 	        }
-	              
+	    
+	    //Choosing random StartPoint position
 	    public int[] setStartPoint(){
+	    	int startY = random.nextInt(mazeSizeHeight-2)+1;
 	    	int startX = random.nextInt(mazeSizeWidth-2)+1;
-        	int startY = random.nextInt(mazeSizeHeight-2)+1;
-        	tilesArray[startX][startY].setState("start");
-        	int[] returnList = {startX, startY};
+	    	tilesArray[startY][startX].setState("start");
+	    	int[] returnList = {startY, startX};
 			return returnList;
         }
-			
-		 
-        public class CurrentTile{
-        	private int coordinate[] = new int[2];
-        	
-        	/*
-        	public void setCoordinate(char coordinate, int pos){
-        		switch(coordinate){
-        			case 'x':
-        				this.coordinate[0] = pos;
-        				break;
-        			case 'y':
-	    				this.coordinate[1] = pos;
-	    				break;
-        		}
-        	}
-        	*/
-        	
-        	public void setCoordinate(int pos1, int pos2){
-        		coordinate[0] = pos1;
-        		coordinate[1] = pos2;
-        	}
-        	
-        	public int getCoordinate(char coordinate){
-        		switch(coordinate){
-    			case 'x':
-    				return this.coordinate[0];
-    			case 'y':
-    				return this.coordinate[1];
-    			default:
-    				return -1;
-        	}
-        		
-        	
-        }
-        
-        	public boolean checkWall(String direction){
-        		int nextX = coordinate[0];
-        		int nextY = coordinate[1];
-        		
-        		switch(direction){
-        		case "up":
-        			nextY--;
-        			break;
-        		case "down":
-        			nextY++;
-        			break;
-        		case "left":
-        			nextX--;
-        			break;
-        		case "right":
-        			nextX++;
-        			break;
-        		}
-        		return tilesArray[nextX][nextY].getState().equals("wall");
-        	}
-        }
-        
-        public void generatePath(){
-        	CurrentTile currentTile = new CurrentTile();
-        	int[] startPointCoordinates = setStartPoint();
-    		currentTile.setCoordinate(startPointCoordinates[0], startPointCoordinates[1]);
-        }
-        
-        
 		 
 		 public void clearMaze(){
-			 for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
-	        		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
-	        			tilesArray[xpos][ypos].setState("empty");
-	        			
+			 for (int posY = 0; posY < mazeSizeHeight; posY++){
+	        		for (int posX = 0; posX < mazeSizeWidth; posX++){
+	        			tilesArray[posY][posX].setState("empty");
 	        		}
 				 }
 		 }
+		 
+		 
+		 //Path Generator class
+		 /*
+		 public class PathGenerator{
+	        	private TileClass currentTile;
+	        	private int currentCoords[] = new int[2];
+	        	
+	        	//? Sets coordinate of current tile
+	        	public void setCoordinate(int posY, int posX){
+	        		currentCoords[0] = posY;
+	        		currentCoords[1] = posX;
+	        		currentTile = tilesArray[currentCoords[0]][currentCoords[1]];
+	        	}
+	        	
+	        	//? Gets coordinate of current tile
+	        	public int[] getCoordinate(){
+	    			return this.currentCoords;
+	        	}
+	        	
+	        	public int[] getNextTile(int[] coords, String dir){
+	        		int[] result = {coords[0], coords[1]};
+	    	    	switch(dir){
+	    				case "up":
+	    					result[0]--;
+	    					break;
+	    				case "down":
+	    					result[0]++;
+	    					break;
+	    				case "left":
+	    					result[1]--;
+	    					break;
+	    				case "right":
+	    					result[1]++;
+	    					break;
+	    			}
+	    	    	return result;
+	        	}
+	        	
+	        	public boolean checkState(int[] coords, String state){
+	        		return (tilesArray[coords[0]][coords[1]].getState().equals(state));
+	        	}
+	        }
+		  */
 	}
 }
