@@ -24,8 +24,8 @@ import javax.swing.table.TableColumnModel;
 
 public class MainClass {
 	
-	public static int mazeSizeWidth = 20;
-	public static int mazeSizeHeight = 20;
+	public static int mazeSizeWidth = 0;
+	public static int mazeSizeHeight = 0;
 	
 	public final static int tileSize = 10;
 	
@@ -38,39 +38,14 @@ public class MainClass {
 	
 	
 	public static void main(String[] args){	
-		/*
-		window.setSize(640, 640);
-		//window.setResizable(false);
-		
-		window.setTitle("MazeGenerator v0.1a");
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setVisible(true);
-		
-		Box box_main = Box.createHorizontalBox();
-		
-		Box box_left = Box.createVerticalBox();
-		box_left.setBorder(new TitledBorder("Parameters"));
-		box_main.add(box_left);
-	
-		Grid grid = new Grid();
-		Box box_grid = Box.createVerticalBox();
-		box_grid.setBorder(new TitledBorder("Maze display"));
-		box_grid.add(grid);
-		box_main.add(box_grid);
-				
-		window.setContentPane(box_main);
-		
-		
-		Generator generator = new Generator(grid);
-		generator.setStartPoint();
-		*/
-		MainWindow window = new MainWindow();
+
 	}
 	
 	//Grid
 	public static class Grid extends JPanel {
+		private static final long serialVersionUID = 6584878493870359373L;
 
-        public Grid() {
+		public Grid() {
         	
         }
 
@@ -99,9 +74,10 @@ public class MainClass {
         			int cellX = 10 + (xpos * 10);
                     int cellY = 10 + (ypos * 10);
                     
+                    //TODO: check if tilesArray is empty at start?
         			switch (tilesArray[xpos][ypos].getState()){
         			case "wall":
-        				g.setColor(Color.RED);
+        				g.setColor(Color.GRAY);	//LIGHT_GRAY / DARK_GRAY for other types of wall
         				g.fillRect(cellX, cellY, 10, 10);
         				break;
         			case "start":
@@ -128,7 +104,7 @@ public class MainClass {
         	
         	for (int xpos = 0; xpos < mazeSizeWidth; xpos++){
         		for (int ypos = 0; ypos < mazeSizeHeight; ypos++){
-        			tilesArray[xpos][ypos] = new TileClass();
+        			tilesArray[xpos][ypos] = new TileClass(ypos*mazeSizeWidth+xpos,xpos,ypos);
             	}
         	}
         }
@@ -169,6 +145,7 @@ public class MainClass {
         public class CurrentTile{
         	private int coordinate[] = new int[2];
         	
+        	/*
         	public void setCoordinate(char coordinate, int pos){
         		switch(coordinate){
         			case 'x':
@@ -179,6 +156,7 @@ public class MainClass {
 	    				break;
         		}
         	}
+        	*/
         	
         	public void setCoordinate(int pos1, int pos2){
         		coordinate[0] = pos1;

@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
 
 
 public class MainWindow {
@@ -71,15 +72,15 @@ public class MainWindow {
 		frame.getContentPane().add(MazeDisplay, "cell 1 0,grow");
 		MazeDisplay.setLayout(new BoxLayout(MazeDisplay, BoxLayout.X_AXIS));
 		
+		JPanel Parameters = new JPanel();
+		frame.getContentPane().add(Parameters, "cell 0 0,grow");
+		Parameters.setLayout(new MigLayout("", "[100]", "[20px][20px][20px]"));
+		
 		grid = new MainClass.Grid();
 		grid.initArray();
 		MazeDisplay.add(grid);
 		grid.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		grid.setLayout(null);
-		
-		JPanel Parameters = new JPanel();
-		frame.getContentPane().add(Parameters, "cell 0 0,grow");
-		Parameters.setLayout(new MigLayout("", "[100]", "[20px][20px][20px]"));
 		
 		generator = new MainClass.Generator(grid);
 		JButton btnNewButton = new JButton("Generate");
