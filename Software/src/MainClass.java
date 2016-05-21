@@ -3,7 +3,9 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -135,12 +137,12 @@ public class MainClass {
 	        }
 	    
 	    //Choosing random StartPoint position
-	    public int[] setStartPoint(){
+	    public TileClass setStartPoint(){
 	    	int startY = random.nextInt(mazeSizeHeight-2)+1;
 	    	int startX = random.nextInt(mazeSizeWidth-2)+1;
 	    	tilesArray[startY][startX].setState("start");
-	    	int[] returnList = {startY, startX};
-			return returnList;
+	    	System.out.println("[StartPoint] Set at:"+startY+":"+startX);
+			return tilesArray[startY][startX];
         }
 		 
 		 public void clearMaze(){
@@ -149,6 +151,157 @@ public class MainClass {
 	        			tilesArray[posY][posX].setState("empty");
 	        		}
 				 }
+		 }
+		 
+		 public void generatePath(TileClass fromTile,int length){
+			 TileClass cTile=fromTile;
+			 
+			 for (int cLength = 1;cLength<=length;cLength++){
+				 System.out.println("[PATH] generating #"+cLength+" tile");
+				 TileClass newTile = generateNextTile(cTile);
+				 if (newTile == cTile) {break;}
+				 else{
+					 cTile = newTile;
+				 }
+			 }
+		 }
+		 
+		 //TODO: Sum of percentages have to 100, not 99.9999999
+		 //TODO: Make searching for surroundings work as an external method
+		 
+		 public TileClass generateNextTile(TileClass fromTile){
+			 TileClass newTile = fromTile;
+			 Map<String, TileClass> surroundTiles = new HashMap<String, TileClass>();
+			 Map<String, Double> surroundTilesChance = new HashMap<String, Double>();
+			 
+			 //Getting sourroundings
+			 int[] cCoords = fromTile.getCoords();
+			 if (tilesArray[cCoords[0]+1][cCoords[1]+0].getState() == "empty"){
+				 surroundTiles.put("down", tilesArray[cCoords[0]+1][cCoords[1]+0]);
+			 }
+			 if (tilesArray[cCoords[0]-1][cCoords[1]+0].getState() == "empty"){
+				 surroundTiles.put("up", tilesArray[cCoords[0]-1][cCoords[1]+0]);
+			 }
+			 if (tilesArray[cCoords[0]+0][cCoords[1]+1].getState() == "empty"){
+				 surroundTiles.put("right", tilesArray[cCoords[0]+0][cCoords[1]+1]);
+			 }
+			 if (tilesArray[cCoords[0]+0][cCoords[1]-1].getState() == "empty"){
+				 surroundTiles.put("left", tilesArray[cCoords[0]+0][cCoords[1]-1]);
+			 }
+			 
+			 System.out.print("[TILE] Free surroundings: ");
+			 for (String cKey : surroundTiles.keySet()) {
+				 System.out.print(cKey+";");
+				}
+			 System.out.println();
+			 
+			 //Check if there is any available tiles to go
+			 if (surroundTiles.size() != 0){
+				 System.out.println("[TILE] Available tiles to generate: "+surroundTiles.size());
+			 
+				 //Checking directions
+				 TileClass cTile;
+				 
+				 //up
+				 cTile = surroundTiles.get("up");
+				 if (cTile != null){
+					 //Checking absolute distance
+					 int distance = cTile.getCoords()[0]-2;	//Y distance to top border
+					 
+					 //Summarizing
+					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 surroundTilesChance.put("up", summaryChance);
+				 }
+				 
+				 //down
+				 cTile = surroundTiles.get("down");
+				 if (cTile != null){
+					 //Checking absolute distance
+					 int distance = mazeSizeHeight-cTile.getCoords()[0]-1;	//Y distance to bottom border
+					 
+					//Summarizing
+					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 surroundTilesChance.put("down", summaryChance);
+				 }
+				 
+				//left
+				 cTile = surroundTiles.get("left");
+				 if (cTile != null){
+					 //Checking absolute distance
+					 int distance = cTile.getCoords()[1]-1;	//X distance to left border
+					 
+					//Summarizing
+					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 surroundTilesChance.put("left", summaryChance);
+				 }
+				 
+				//right
+				 cTile = surroundTiles.get("right");
+				 if (cTile != null){
+					 //Checking absolute distance
+					 int distance = mazeSizeWidth-cTile.getCoords()[1]-2;	//X distance to right border
+					 
+					//Summarizing
+					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 surroundTilesChance.put("right", summaryChance);
+				 }
+				 
+				 //Getting sum of all chances
+				 double sumChance = 0;
+				 for (Double cChance : surroundTilesChance.values()) {
+					    sumChance += cChance;
+					}
+				 
+				 System.out.print("[TILE] Chances for tiles: ");
+				 for (String cKey : surroundTilesChance.keySet()) {
+					 System.out.print(cKey+"|"+surroundTilesChance.get(cKey)+";");
+					}
+				 System.out.println();
+				 
+				 //Calculating percentage for each direction
+				 for (String cKey : surroundTilesChance.keySet()) {
+					 	surroundTilesChance.put(cKey,surroundTilesChance.get(cKey)/sumChance*100);
+					}
+				 
+				 System.out.print("[TILE] Percentages for tiles: ");
+				 for (String cKey : surroundTilesChance.keySet()) {
+					 System.out.print(cKey+"|"+surroundTilesChance.get(cKey)+";");
+					}
+				 System.out.println();
+				 
+				 
+				 //Choosing direction
+				 
+				 //Creating random integer [1-100]
+				 int roll = 1+random.nextInt(99);
+				 System.out.println("[TILE] Given random roll: "+roll);
+				 //Percentage structure: up(%),down(%),left(%),right(%)
+				 double lastPercent = 0;
+				 for (String cKey : surroundTilesChance.keySet()) {
+					 	lastPercent+=surroundTilesChance.get(cKey);
+					 	System.out.println("[TILE] Checking percentage for ["+cKey+"|"+surroundTilesChance.get(cKey)+"]. "+roll+" have to be under"+lastPercent);
+					 	if (roll<=lastPercent){
+					 		newTile = surroundTiles.get(cKey);
+					 		
+					 		//Setting state of previous surroundings as wall
+							 for (String cKey1 : surroundTiles.keySet()) {
+								 	surroundTiles.get(cKey1).setState("wall");
+								}
+							 
+							//Setting state of generated Tile as path
+							 newTile.setState("path");
+							 
+							System.out.println("[TILE] Generating new tile at ["+cKey+"]. Coords: "+newTile.getCoords()[0]+";"+newTile.getCoords()[1]);
+					 		
+					 		break;
+					 	}
+					}
+			 }
+			 return newTile;
+		 }
+		 
+		 public void generateIntersections(PathClass path){
+			 
 		 }
 		 
 		 

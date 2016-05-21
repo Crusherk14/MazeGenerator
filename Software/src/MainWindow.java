@@ -91,7 +91,7 @@ public class MainWindow {
 				grid.initArray();
 				
 				generator.FillBorders();
-				generator.setStartPoint();
+				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*5));
 				
 				//generator.generatePath();
 				grid.repaintCells();
