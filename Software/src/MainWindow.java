@@ -35,6 +35,10 @@ public class MainWindow {
 	
 	public static MainClass.Grid grid;
 	public static MainClass.Generator generator;
+	private JTextField textField_PathLength;
+	private JLabel lblHeight;
+	private JLabel lblWidth;
+	private JLabel lblPathlength;
 
 	/**
 	 * Launch the application.
@@ -64,7 +68,7 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 579, 423);
+		frame.setBounds(100, 100, 700, 550);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new MigLayout("", "[][grow]", "[grow]"));
 		
@@ -74,7 +78,7 @@ public class MainWindow {
 		
 		JPanel Parameters = new JPanel();
 		frame.getContentPane().add(Parameters, "cell 0 0,grow");
-		Parameters.setLayout(new MigLayout("", "[100]", "[20px][20px][20px]"));
+		Parameters.setLayout(new MigLayout("", "[][100,grow]", "[20px][20px][20px][]"));
 		
 		grid = new MainClass.Grid();
 		grid.initArray();
@@ -91,26 +95,42 @@ public class MainWindow {
 				grid.initArray();
 				
 				generator.FillBorders();
-				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*5));
+				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
 				
 				//generator.generatePath();
 				grid.repaintCells();
 				
 			}
 		});
-		Parameters.add(btnNewButton, "cell 0 0,growx,aligny center");
+		Parameters.add(btnNewButton, "cell 1 0,growx,aligny center");
+		
+		lblHeight = new JLabel("Height");
+		Parameters.add(lblHeight, "cell 0 1,alignx center");
 		
 		textField_Width = new JTextField();
-		textField_Width.setText("20");
+		textField_Width.setText("30");
 		textField_Width.setHorizontalAlignment(SwingConstants.CENTER);
-		Parameters.add(textField_Width, "cell 0 1,growx,aligny top");
+		Parameters.add(textField_Width, "cell 1 1,growx,aligny top");
 		textField_Width.setColumns(10);
 		
+		lblWidth = new JLabel("Width");
+		lblWidth.setHorizontalAlignment(SwingConstants.CENTER);
+		Parameters.add(lblWidth, "cell 0 2,alignx center");
+		
 		textField_Height = new JTextField();
-		textField_Height.setText("20");
+		textField_Height.setText("30");
 		textField_Height.setHorizontalAlignment(SwingConstants.CENTER);
-		Parameters.add(textField_Height, "cell 0 2,growx,aligny top");
+		Parameters.add(textField_Height, "cell 1 2,growx,aligny top");
 		textField_Height.setColumns(10);
+		
+		lblPathlength = new JLabel("PathLength (%)");
+		Parameters.add(lblPathlength, "cell 0 3,alignx center");
+		
+		textField_PathLength = new JTextField();
+		textField_PathLength.setText("5");
+		textField_PathLength.setHorizontalAlignment(SwingConstants.CENTER);
+		textField_PathLength.setColumns(10);
+		Parameters.add(textField_PathLength, "cell 1 3,growx");
 	}
 
 }

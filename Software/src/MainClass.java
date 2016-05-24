@@ -21,6 +21,9 @@ import javax.swing.JComponent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import sun.rmi.runtime.Log;
+
 import javax.swing.table.TableColumnModel;
 
 
@@ -54,20 +57,6 @@ public class MainClass {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-        	
-            //Draws basic black grid
-            int TileSize = MainClass.tileSize;
-            int MazeHeight = MainClass.mazeSizeHeight;
-            int MazeWidth = MainClass.mazeSizeWidth;
-            g.setColor(Color.BLACK);
-            g.drawRect (TileSize, TileSize, MazeWidth*TileSize, MazeHeight*TileSize);
-
-            for (int i = TileSize; i <= MazeWidth*TileSize+TileSize; i+= TileSize)
-                g.drawLine (i, TileSize, i, (1+MazeHeight)*TileSize);
-
-            for (int i = 10; i <= MazeHeight*TileSize+TileSize; i+= TileSize)
-                g.drawLine (TileSize, i, (1+MazeWidth)*TileSize, i);
-            
             
           //Filling tiles with different colors
         	for (int posY = 0; posY < mazeSizeHeight; posY++){
@@ -87,12 +76,25 @@ public class MainClass {
         				g.fillRect(cellX, cellY, 10, 10);
         				break;
         			case "path":
-        				g.setColor(Color.BLUE);
+        				g.setColor(new Color(30,144,255));
         				g.fillRect(cellX, cellY, 10, 10);
         				break;
         			}
             	}
         	}
+        	
+	    	//Draws basic black grid
+	        int TileSize = MainClass.tileSize;
+	        int MazeHeight = MainClass.mazeSizeHeight;
+	        int MazeWidth = MainClass.mazeSizeWidth;
+	        g.setColor(Color.BLACK);
+	        g.drawRect (TileSize, TileSize, MazeWidth*TileSize, MazeHeight*TileSize);
+	
+	        for (int i = TileSize; i <= MazeWidth*TileSize+TileSize; i+= TileSize)
+	            g.drawLine (i, TileSize, i, (1+MazeHeight)*TileSize);
+	
+	        for (int i = 10; i <= MazeHeight*TileSize+TileSize; i+= TileSize)
+	            g.drawLine (TileSize, i, (1+MazeWidth)*TileSize, i);
             
         }
 
@@ -117,6 +119,10 @@ public class MainClass {
 		public int pathLength;
 		private final Random random = new Random();
 		public Grid grid;
+		
+		
+		private double GEN_TILE_COEFFICIENT_distanceAbs = 0.2;	//20%
+		private double GEN_TILE_COEFFICIENT_distanceBlock = 0.8;	//80%
 		
 	    public Generator(Grid getGrid) {
 	     	grid = getGrid;
@@ -144,6 +150,11 @@ public class MainClass {
 	    	System.out.println("[StartPoint] Set at:"+startY+":"+startX);
 			return tilesArray[startY][startX];
         }
+	    
+	    //Sets finishing tile as Finish
+	    public void setFinishPoint(TileClass tile){
+	    	
+	    }
 		 
 		 public void clearMaze(){
 			 for (int posY = 0; posY < mazeSizeHeight; posY++){
@@ -155,6 +166,7 @@ public class MainClass {
 		 
 		 public void generatePath(TileClass fromTile,int length){
 			 TileClass cTile=fromTile;
+			 //PathClass cPath= new PathClass();
 			 
 			 for (int cLength = 1;cLength<=length;cLength++){
 				 System.out.println("[PATH] generating #"+cLength+" tile");
@@ -164,10 +176,14 @@ public class MainClass {
 					 cTile = newTile;
 				 }
 			 }
+			 
+			 //return cPath;
 		 }
 		 
-		 //TODO: Sum of percentages have to 100, not 99.9999999
+		 //TODO: Sum of percentages have to be 100, not 99.9999
 		 //TODO: Make searching for surroundings work as an external method
+		 //TODO: Chances need to be counted as described in dialog (%=(cDistanceAbs/sum(iDistanceAbs))*0.2+(cDistanceBlock/sum(iDistanceBlock))*0.8) and so on...
+		 //DONE: Chances don't have to be counted for surroundings. Change cTile to fromTile
 		 
 		 public TileClass generateNextTile(TileClass fromTile){
 			 TileClass newTile = fromTile;
@@ -195,7 +211,7 @@ public class MainClass {
 				}
 			 System.out.println();
 			 
-			 //Check if there is any available tiles to go
+			 //Checking if there is any available tiles to go
 			 if (surroundTiles.size() != 0){
 				 System.out.println("[TILE] Available tiles to generate: "+surroundTiles.size());
 			 
@@ -206,10 +222,22 @@ public class MainClass {
 				 cTile = surroundTiles.get("up");
 				 if (cTile != null){
 					 //Checking absolute distance
-					 int distance = cTile.getCoords()[0]-2;	//Y distance to top border
+					 int distanceAbs = fromTile.getCoords()[0]-1;	//Y distance to top border
+					 
+					 //Checking distance to closest roadblock
+					 int distanceBlock = 0;
+					 int posY = fromTile.getCoords()[0];
+					 int posX = fromTile.getCoords()[1];
+					 for (posY-=1;posY>=0;posY--){
+						 if (tilesArray[posY][posX].getState() != "empty"){
+							 break;
+						 }
+						 distanceBlock+=1;
+					 }
+					 System.out.println("[TILE] Counting distance to closest roadblock for \"up\":"+distanceBlock);
 					 
 					 //Summarizing
-					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
 					 surroundTilesChance.put("up", summaryChance);
 				 }
 				 
@@ -217,10 +245,23 @@ public class MainClass {
 				 cTile = surroundTiles.get("down");
 				 if (cTile != null){
 					 //Checking absolute distance
-					 int distance = mazeSizeHeight-cTile.getCoords()[0]-1;	//Y distance to bottom border
+					 int distanceAbs = mazeSizeHeight-fromTile.getCoords()[0]-2;	//Y distance to bottom border
+					 
+					//Checking distance to closest roadblock
+					 int distanceBlock = 0;
+					 int posY = fromTile.getCoords()[0];
+					 int posX = fromTile.getCoords()[1];
+					 for (posY+=1;posY<=mazeSizeHeight-1;posY++){
+						 if (tilesArray[posY][posX].getState() != "empty"){
+							 break;
+						 }
+						 distanceBlock+=1;
+					 }
+					 System.out.println("[TILE] Counting distance to closest roadblock for \"down\":"+distanceBlock);
+					 
 					 
 					//Summarizing
-					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
 					 surroundTilesChance.put("down", summaryChance);
 				 }
 				 
@@ -228,10 +269,22 @@ public class MainClass {
 				 cTile = surroundTiles.get("left");
 				 if (cTile != null){
 					 //Checking absolute distance
-					 int distance = cTile.getCoords()[1]-1;	//X distance to left border
+					 int distanceAbs = fromTile.getCoords()[1]-1;	//X distance to left border
+					 
+					//Checking distance to closest roadblock
+					 int distanceBlock = 0;
+					 int posY = fromTile.getCoords()[0];
+					 int posX = fromTile.getCoords()[1];
+					 for (posX-=1;posX>=0;posX--){
+						 if (tilesArray[posY][posX].getState() != "empty"){
+							 break;
+						 }
+						 distanceBlock+=1;
+					 }
+					 System.out.println("[TILE] Counting distance to closest roadblock for \"left\":"+distanceBlock);
 					 
 					//Summarizing
-					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
 					 surroundTilesChance.put("left", summaryChance);
 				 }
 				 
@@ -239,10 +292,22 @@ public class MainClass {
 				 cTile = surroundTiles.get("right");
 				 if (cTile != null){
 					 //Checking absolute distance
-					 int distance = mazeSizeWidth-cTile.getCoords()[1]-2;	//X distance to right border
+					 int distanceAbs = mazeSizeWidth-fromTile.getCoords()[1]-2;	//X distance to right border
+					 
+					//Checking distance to closest roadblock
+					 int distanceBlock = 0;
+					 int posY = fromTile.getCoords()[0];
+					 int posX = fromTile.getCoords()[1];
+					 for (posX+=1;posX<=mazeSizeWidth-1;posX++){
+						 if (tilesArray[posY][posX].getState() != "empty"){
+							 break;
+						 }
+						 distanceBlock+=1;
+					 }
+					 System.out.println("[TILE] Counting distance to closest roadblock for \"right\":"+distanceBlock);
 					 
 					//Summarizing
-					 double summaryChance = distance*1.0;	// put different values with their coefficients
+					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
 					 surroundTilesChance.put("right", summaryChance);
 				 }
 				 
@@ -303,49 +368,5 @@ public class MainClass {
 		 public void generateIntersections(PathClass path){
 			 
 		 }
-		 
-		 
-		 //Path Generator class
-		 /*
-		 public class PathGenerator{
-	        	private TileClass currentTile;
-	        	private int currentCoords[] = new int[2];
-	        	
-	        	//? Sets coordinate of current tile
-	        	public void setCoordinate(int posY, int posX){
-	        		currentCoords[0] = posY;
-	        		currentCoords[1] = posX;
-	        		currentTile = tilesArray[currentCoords[0]][currentCoords[1]];
-	        	}
-	        	
-	        	//? Gets coordinate of current tile
-	        	public int[] getCoordinate(){
-	    			return this.currentCoords;
-	        	}
-	        	
-	        	public int[] getNextTile(int[] coords, String dir){
-	        		int[] result = {coords[0], coords[1]};
-	    	    	switch(dir){
-	    				case "up":
-	    					result[0]--;
-	    					break;
-	    				case "down":
-	    					result[0]++;
-	    					break;
-	    				case "left":
-	    					result[1]--;
-	    					break;
-	    				case "right":
-	    					result[1]++;
-	    					break;
-	    			}
-	    	    	return result;
-	        	}
-	        	
-	        	public boolean checkState(int[] coords, String state){
-	        		return (tilesArray[coords[0]][coords[1]].getState().equals(state));
-	        	}
-	        }
-		  */
 	}
 }
