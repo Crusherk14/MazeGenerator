@@ -182,13 +182,19 @@ public class MainClass {
 		 
 		 //TODO: Sum of percentages have to be 100, not 99.9999
 		 //TODO: Make searching for surroundings work as an external method
-		 //TODO: Chances need to be counted as described in dialog (%=(cDistanceAbs/sum(iDistanceAbs))*0.2+(cDistanceBlock/sum(iDistanceBlock))*0.8) and so on...
+		 //WIP: Chances need to be counted as described in dialog (%=(cDistanceAbs/sum(iDistanceAbs))*0.2+(cDistanceBlock/sum(iDistanceBlock))*0.8) and so on...
 		 //DONE: Chances don't have to be counted for surroundings. Change cTile to fromTile
 		 
 		 public TileClass generateNextTile(TileClass fromTile){
 			 TileClass newTile = fromTile;
 			 Map<String, TileClass> surroundTiles = new HashMap<String, TileClass>();
-			 Map<String, Double> surroundTilesChance = new HashMap<String, Double>();
+			 Map<String, Double> surroundTilesChances = new HashMap<String, Double>();
+			 Map<String, Integer[]> surroundTilesParameters = new HashMap<String, Integer[]>();
+			 
+			 /* example
+			 Integer[] array = {5,3,2};
+			 surroundTilesParameters.put("up", array);
+			 */
 			 
 			 //Getting sourroundings
 			 int[] cCoords = fromTile.getCoords();
@@ -217,10 +223,12 @@ public class MainClass {
 			 
 				 //Checking directions
 				 TileClass cTile;
+				 String cKey;
 				 
 				 //up
-				 cTile = surroundTiles.get("up");
-				 if (cTile != null){
+				 cKey="up";
+				 cTile = surroundTiles.get(cKey);
+				 if (cTile != null){					 
 					 //Checking absolute distance
 					 int distanceAbs = fromTile.getCoords()[0]-1;	//Y distance to top border
 					 
@@ -234,15 +242,19 @@ public class MainClass {
 						 }
 						 distanceBlock+=1;
 					 }
-					 System.out.println("[TILE] Counting distance to closest roadblock for \"up\":"+distanceBlock);
+					 System.out.println("[TILE] Counting distance to closest roadblock for "+cKey+":"+distanceBlock);
 					 
 					 //Summarizing
-					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
-					 surroundTilesChance.put("up", summaryChance);
+					 Integer[] params = {distanceAbs,distanceBlock};
+					 surroundTilesParameters.put(cKey,params);
+					 
+					 //double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
+					 //surroundTilesChance.put(cKey, summaryChance);
 				 }
 				 
 				 //down
-				 cTile = surroundTiles.get("down");
+				 cKey="down";
+				 cTile = surroundTiles.get(cKey);
 				 if (cTile != null){
 					 //Checking absolute distance
 					 int distanceAbs = mazeSizeHeight-fromTile.getCoords()[0]-2;	//Y distance to bottom border
@@ -257,16 +269,19 @@ public class MainClass {
 						 }
 						 distanceBlock+=1;
 					 }
-					 System.out.println("[TILE] Counting distance to closest roadblock for \"down\":"+distanceBlock);
+					 System.out.println("[TILE] Counting distance to closest roadblock for "+cKey+":"+distanceBlock);
 					 
+					 //Summarizing
+					 Integer[] params = {distanceAbs,distanceBlock};
+					 surroundTilesParameters.put(cKey,params);
 					 
-					//Summarizing
-					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
-					 surroundTilesChance.put("down", summaryChance);
+					 //double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
+					 //surroundTilesChance.put(cKey, summaryChance);
 				 }
 				 
 				//left
-				 cTile = surroundTiles.get("left");
+				 cKey="left";
+				 cTile = surroundTiles.get(cKey);
 				 if (cTile != null){
 					 //Checking absolute distance
 					 int distanceAbs = fromTile.getCoords()[1]-1;	//X distance to left border
@@ -281,15 +296,19 @@ public class MainClass {
 						 }
 						 distanceBlock+=1;
 					 }
-					 System.out.println("[TILE] Counting distance to closest roadblock for \"left\":"+distanceBlock);
+					 System.out.println("[TILE] Counting distance to closest roadblock for "+cKey+":"+distanceBlock);
 					 
-					//Summarizing
-					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
-					 surroundTilesChance.put("left", summaryChance);
+					 //Summarizing
+					 Integer[] params = {distanceAbs,distanceBlock};
+					 surroundTilesParameters.put(cKey,params);
+					 
+					 //double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
+					 //surroundTilesChance.put(cKey, summaryChance);
 				 }
 				 
 				//right
-				 cTile = surroundTiles.get("right");
+				 cKey="right";
+				 cTile = surroundTiles.get(cKey);
 				 if (cTile != null){
 					 //Checking absolute distance
 					 int distanceAbs = mazeSizeWidth-fromTile.getCoords()[1]-2;	//X distance to right border
@@ -304,33 +323,63 @@ public class MainClass {
 						 }
 						 distanceBlock+=1;
 					 }
-					 System.out.println("[TILE] Counting distance to closest roadblock for \"right\":"+distanceBlock);
+					 System.out.println("[TILE] Counting distance to closest roadblock for "+cKey+":"+distanceBlock);
 					 
-					//Summarizing
-					 double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
-					 surroundTilesChance.put("right", summaryChance);
+					 //Summarizing
+					 Integer[] params = {distanceAbs,distanceBlock};
+					 surroundTilesParameters.put(cKey,params);
+					 
+					 //double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
+					 //surroundTilesChance.put(cKey, summaryChance);
 				 }
 				 
 				 //Getting sum of all chances
+				 /*
 				 double sumChance = 0;
 				 for (Double cChance : surroundTilesChance.values()) {
 					    sumChance += cChance;
 					}
+				  */
 				 
+				 //Calculating percentages
+				 //Getting sum of distanceAbs
+				 int sumDistanceAbs = 0;
+				 for (String ccKey : surroundTilesParameters.keySet()) {
+					 sumDistanceAbs += surroundTilesParameters.get(ccKey)[0];
+				 }
+				 System.out.println("[TILE] Sum of distanceAbs: "+sumDistanceAbs);
+				 
+				 //Getting sum of distanceBlock
+				 int sumDistanceBlock = 0;
+				 for (String ccKey : surroundTilesParameters.keySet()) {
+					 sumDistanceBlock += surroundTilesParameters.get(ccKey)[1];
+				 }
+				 System.out.println("[TILE] Sum of distanceBlock: "+sumDistanceBlock);
+				 
+				 //Calculating percentages for each available direction
+				 for (String ccKey : surroundTilesParameters.keySet()) {
+					 Double chanceDistanceAbs = (double) surroundTilesParameters.get(ccKey)[0]/sumDistanceAbs*100;
+					 Double chanceDistanceBlock = (double) surroundTilesParameters.get(ccKey)[1]/sumDistanceBlock*100;
+					 Double chance = (double) GEN_TILE_COEFFICIENT_distanceAbs*chanceDistanceAbs+GEN_TILE_COEFFICIENT_distanceBlock*chanceDistanceBlock;
+					 surroundTilesChances.put(ccKey,chance);
+				 }
+				 
+				 /*
 				 System.out.print("[TILE] Chances for tiles: ");
-				 for (String cKey : surroundTilesChance.keySet()) {
-					 System.out.print(cKey+"|"+surroundTilesChance.get(cKey)+";");
+				 for (String ccKey : surroundTilesChances.keySet()) {
+					 System.out.print(cKey+"|"+surroundTilesChances.get(cKey)+";");
 					}
 				 System.out.println();
 				 
 				 //Calculating percentage for each direction
-				 for (String cKey : surroundTilesChance.keySet()) {
-					 	surroundTilesChance.put(cKey,surroundTilesChance.get(cKey)/sumChance*100);
+				 for (String ccKey : surroundTilesChances.keySet()) {
+					 	surroundTilesChances.put(cKey,surroundTilesChances.get(cKey)/sumChance*100);
 					}
+				 */
 				 
 				 System.out.print("[TILE] Percentages for tiles: ");
-				 for (String cKey : surroundTilesChance.keySet()) {
-					 System.out.print(cKey+"|"+surroundTilesChance.get(cKey)+";");
+				 for (String ccKey : surroundTilesChances.keySet()) {
+					 System.out.print(ccKey+"|"+surroundTilesChances.get(ccKey)+";");
 					}
 				 System.out.println();
 				 
@@ -342,21 +391,21 @@ public class MainClass {
 				 System.out.println("[TILE] Given random roll: "+roll);
 				 //Percentage structure: up(%),down(%),left(%),right(%)
 				 double lastPercent = 0;
-				 for (String cKey : surroundTilesChance.keySet()) {
-					 	lastPercent+=surroundTilesChance.get(cKey);
-					 	System.out.println("[TILE] Checking percentage for ["+cKey+"|"+surroundTilesChance.get(cKey)+"]. "+roll+" have to be under"+lastPercent);
+				 for (String ccKey : surroundTilesChances.keySet()) {
+					 	lastPercent+=surroundTilesChances.get(ccKey);
+					 	System.out.println("[TILE] Checking percentage for ["+ccKey+"|"+surroundTilesChances.get(ccKey)+"]. "+roll+" have to be under "+lastPercent);
 					 	if (roll<=lastPercent){
-					 		newTile = surroundTiles.get(cKey);
+					 		newTile = surroundTiles.get(ccKey);
 					 		
 					 		//Setting state of previous surroundings as wall
-							 for (String cKey1 : surroundTiles.keySet()) {
-								 	surroundTiles.get(cKey1).setState("wall");
+							 for (String cccKey : surroundTiles.keySet()) {
+								 	surroundTiles.get(cccKey).setState("wall");
 								}
 							 
 							//Setting state of generated Tile as path
 							 newTile.setState("path");
 							 
-							System.out.println("[TILE] Generating new tile at ["+cKey+"]. Coords: "+newTile.getCoords()[0]+";"+newTile.getCoords()[1]);
+							System.out.println("[TILE] Generating new tile at ["+ccKey+"]. Coords: "+newTile.getCoords()[0]+";"+newTile.getCoords()[1]);
 					 		
 					 		break;
 					 	}
