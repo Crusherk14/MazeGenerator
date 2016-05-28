@@ -38,6 +38,7 @@ public class MainClass {
 	public static JPanel panel=new JPanel();
 	
 	public static TileClass tilesArray[][];
+	public static ArrayList<PathClass> pathsArray =  new ArrayList<PathClass>();
 
 	public static Random random = new Random();
 	
@@ -68,16 +69,20 @@ public class MainClass {
                     //TODO: check if tilesArray is empty at start?
         			switch (tilesArray[posY][posX].getState()){
         			case "wall":
-        				g.setColor(Color.GRAY);	//LIGHT_GRAY / DARK_GRAY for other types of wall
-        				g.fillRect(cellX, cellY, 10, 10);
+        				g.setColor(new Color(150,150,150));
+        				g.fillRect(cellY, cellX, 10, 10);
+        				break;
+        			case "hwall":
+        				g.setColor(new Color(90,90,90));
+        				g.fillRect(cellY, cellX, 10, 10);
         				break;
         			case "start":
         				g.setColor(Color.GREEN);
-        				g.fillRect(cellX, cellY, 10, 10);
+        				g.fillRect(cellY, cellX, 10, 10);
         				break;
         			case "path":
         				g.setColor(new Color(30,144,255));
-        				g.fillRect(cellX, cellY, 10, 10);
+        				g.fillRect(cellY, cellX, 10, 10);
         				break;
         			}
             	}
@@ -88,13 +93,14 @@ public class MainClass {
 	        int MazeHeight = MainClass.mazeSizeHeight;
 	        int MazeWidth = MainClass.mazeSizeWidth;
 	        g.setColor(Color.BLACK);
-	        g.drawRect (TileSize, TileSize, MazeWidth*TileSize, MazeHeight*TileSize);
+	        g.drawRect (TileSize, TileSize, MazeHeight*TileSize, MazeWidth*TileSize);
+	        
+	        for (int i = TileSize; i <= MazeHeight*TileSize+TileSize; i+= TileSize)
+	        	g.drawLine (i, TileSize, i, (1+MazeWidth)*TileSize);
 	
 	        for (int i = TileSize; i <= MazeWidth*TileSize+TileSize; i+= TileSize)
-	            g.drawLine (i, TileSize, i, (1+MazeHeight)*TileSize);
-	
-	        for (int i = 10; i <= MazeHeight*TileSize+TileSize; i+= TileSize)
-	            g.drawLine (TileSize, i, (1+MazeWidth)*TileSize, i);
+	        	g.drawLine (TileSize, i, (1+MazeHeight)*TileSize, i);
+	            
             
         }
 
@@ -133,12 +139,12 @@ public class MainClass {
 	    //Filling borders of tilesArray
 	    public void FillBorders(){
 		     	for (int posY = 1; posY <= mazeSizeHeight-1; posY++){
-		     		tilesArray[posY][0].setState("wall");
-		     		tilesArray[posY][mazeSizeWidth-1].setState("wall");
+		     		tilesArray[posY][0].setState("hwall");
+		     		tilesArray[posY][mazeSizeWidth-1].setState("hwall");
 		        }
 		        for (int posX = 0; posX<mazeSizeWidth; posX++){
-		        	tilesArray[0][posX].setState("wall");
-		            tilesArray[mazeSizeHeight-1][posX].setState("wall");
+		        	tilesArray[0][posX].setState("hwall");
+		            tilesArray[mazeSizeHeight-1][posX].setState("hwall");
 		        }
 	        }
 	    
@@ -165,51 +171,59 @@ public class MainClass {
 		 }
 		 
 		 public void generatePath(TileClass fromTile,int length){
+			 PathClass cPath = new PathClass(pathsArray.size(),fromTile);
+			 pathsArray.add(cPath);
+			 
+			 System.out.println("[PATH] Generating new path #"+cPath.getID());
+			 
 			 TileClass cTile=fromTile;
-			 //PathClass cPath= new PathClass();
 			 
 			 for (int cLength = 1;cLength<=length;cLength++){
-				 System.out.println("[PATH] generating #"+cLength+" tile");
-				 TileClass newTile = generateNextTile(cTile);
+				 System.out.println("[PATH] Generating #"+cLength+" tile");
+				 TileClass newTile = generateNextTile(cTile,cPath);
 				 if (newTile == cTile) {break;}
 				 else{
 					 cTile = newTile;
+					 cPath.addTile(newTile);
 				 }
 			 }
-			 
-			 //return cPath;
 		 }
 		 
 		 //TODO: Sum of percentages have to be 100, not 99.9999
-		 //TODO: Make searching for surroundings work as an external method
-		 //WIP: Chances need to be counted as described in dialog (%=(cDistanceAbs/sum(iDistanceAbs))*0.2+(cDistanceBlock/sum(iDistanceBlock))*0.8) and so on...
+		 //DONE: Make searching for surroundings work as an external method
+		 //DONE: Chances need to be counted as described in dialog (%=(cDistanceAbs/sum(iDistanceAbs))*0.2+(cDistanceBlock/sum(iDistanceBlock))*0.8) and so on...
 		 //DONE: Chances don't have to be counted for surroundings. Change cTile to fromTile
 		 
-		 public TileClass generateNextTile(TileClass fromTile){
+		 public Map<String, TileClass> getSurroundTiles(TileClass cTile, String[] stateFilters){
+			 Map<String, TileClass> surroundTiles = new HashMap<String, TileClass>();
+			 
+			 int[] cCoords = cTile.getCoords();
+			 for (String state: stateFilters){
+				 if (tilesArray[cCoords[0]+1][cCoords[1]+0].getState() == state){
+					 surroundTiles.put("down", tilesArray[cCoords[0]+1][cCoords[1]+0]);
+				 }
+				 if (tilesArray[cCoords[0]-1][cCoords[1]+0].getState() == state){
+					 surroundTiles.put("up", tilesArray[cCoords[0]-1][cCoords[1]+0]);
+				 }
+				 if (tilesArray[cCoords[0]+0][cCoords[1]+1].getState() == state){
+					 surroundTiles.put("right", tilesArray[cCoords[0]+0][cCoords[1]+1]);
+				 }
+				 if (tilesArray[cCoords[0]+0][cCoords[1]-1].getState() == state){
+					 surroundTiles.put("left", tilesArray[cCoords[0]+0][cCoords[1]-1]);
+				 }
+			 }
+			 
+			 return surroundTiles;
+		 }
+		 
+		 public TileClass generateNextTile(TileClass fromTile, PathClass cPath){
 			 TileClass newTile = fromTile;
 			 Map<String, TileClass> surroundTiles = new HashMap<String, TileClass>();
-			 Map<String, Double> surroundTilesChances = new HashMap<String, Double>();
 			 Map<String, Integer[]> surroundTilesParameters = new HashMap<String, Integer[]>();
+			 Map<String, Double> surroundTilesChances = new HashMap<String, Double>();
 			 
-			 /* example
-			 Integer[] array = {5,3,2};
-			 surroundTilesParameters.put("up", array);
-			 */
-			 
-			 //Getting sourroundings
-			 int[] cCoords = fromTile.getCoords();
-			 if (tilesArray[cCoords[0]+1][cCoords[1]+0].getState() == "empty"){
-				 surroundTiles.put("down", tilesArray[cCoords[0]+1][cCoords[1]+0]);
-			 }
-			 if (tilesArray[cCoords[0]-1][cCoords[1]+0].getState() == "empty"){
-				 surroundTiles.put("up", tilesArray[cCoords[0]-1][cCoords[1]+0]);
-			 }
-			 if (tilesArray[cCoords[0]+0][cCoords[1]+1].getState() == "empty"){
-				 surroundTiles.put("right", tilesArray[cCoords[0]+0][cCoords[1]+1]);
-			 }
-			 if (tilesArray[cCoords[0]+0][cCoords[1]-1].getState() == "empty"){
-				 surroundTiles.put("left", tilesArray[cCoords[0]+0][cCoords[1]-1]);
-			 }
+			 //Getting surroundings
+			 surroundTiles = getSurroundTiles(fromTile, new String[]{"empty"});
 			 
 			 System.out.print("[TILE] Free surroundings: ");
 			 for (String cKey : surroundTiles.keySet()) {
@@ -404,6 +418,7 @@ public class MainClass {
 							 
 							//Setting state of generated Tile as path
 							 newTile.setState("path");
+							 newTile.assignPath(cPath, ccKey);
 							 
 							System.out.println("[TILE] Generating new tile at ["+ccKey+"]. Coords: "+newTile.getCoords()[0]+";"+newTile.getCoords()[1]);
 					 		
