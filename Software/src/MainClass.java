@@ -32,7 +32,9 @@ public class MainClass {
 	public static int mazeSizeWidth = 0;
 	public static int mazeSizeHeight = 0;
 	
-	public final static int tileSize = 10;
+	public static int tileSize = 5;
+
+	public static int generationDelay = 20;	//speed
 	
 	public static JFrame window = new JFrame();
 	public static JPanel panel=new JPanel();
@@ -63,26 +65,30 @@ public class MainClass {
         	for (int posY = 0; posY < mazeSizeHeight; posY++){
         		for (int posX = 0; posX < mazeSizeWidth; posX++){
         			
-        			int cellY = 10 + (posY * 10);
-                    int cellX = 10 + (posX * 10);
+        			int cellY = tileSize + (posY * tileSize);
+                    int cellX = tileSize + (posX * tileSize);
                     
                     //TODO: check if tilesArray is empty at start?
         			switch (tilesArray[posY][posX].getState()){
         			case "wall":
-        				g.setColor(new Color(150,150,150));
-        				g.fillRect(cellY, cellX, 10, 10);
+        				g.setColor(new Color(150,150,150));	//GRAY
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
         				break;
         			case "hwall":
-        				g.setColor(new Color(90,90,90));
-        				g.fillRect(cellY, cellX, 10, 10);
+        				g.setColor(new Color(90,90,90));	//DARK_GRAY
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
         				break;
         			case "start":
-        				g.setColor(Color.GREEN);
-        				g.fillRect(cellY, cellX, 10, 10);
+        				g.setColor(Color.GREEN);			//GREEN
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
         				break;
         			case "path":
-        				g.setColor(new Color(30,144,255));
-        				g.fillRect(cellY, cellX, 10, 10);
+        				g.setColor(new Color(30,144,255));	//BLUE
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
+        				break;
+        			case "turn":
+        				g.setColor(new Color(155,100,255));	//PURPLE
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
         				break;
         			}
             	}
@@ -100,8 +106,6 @@ public class MainClass {
 	
 	        for (int i = TileSize; i <= MazeWidth*TileSize+TileSize; i+= TileSize)
 	        	g.drawLine (TileSize, i, (1+MazeHeight)*TileSize, i);
-	            
-            
         }
 
         //Calls grid to be completely repainted according to TilesAraay
@@ -109,7 +113,14 @@ public class MainClass {
         	repaint();
         }
         
-        public void initArray(){
+        //Clears all variables
+        public void clearData(){
+    		pathsArray =  new ArrayList<PathClass>();
+    		initArray();
+    	}
+    	
+        //Creates new tileArray clearing all the previous data
+    	public void initArray(){
         	tilesArray = new TileClass[mazeSizeHeight][mazeSizeWidth];
         	
         	for (int posY = 0; posY < mazeSizeHeight; posY++){
@@ -118,7 +129,6 @@ public class MainClass {
             	}
         	}
         }
-
     }
 	
 	public static class Generator {
@@ -135,16 +145,28 @@ public class MainClass {
 	    }
 			    
 	    //Main methods of Generator
+	    public void updateUI(){
+	    	try {
+				grid.repaintCells();
+			    Thread.sleep(generationDelay);
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}
+	    }
 	    
 	    //Filling borders of tilesArray
 	    public void FillBorders(){
 		     	for (int posY = 1; posY <= mazeSizeHeight-1; posY++){
 		     		tilesArray[posY][0].setState("hwall");
 		     		tilesArray[posY][mazeSizeWidth-1].setState("hwall");
+		     		
+		     		updateUI();
 		        }
 		        for (int posX = 0; posX<mazeSizeWidth; posX++){
 		        	tilesArray[0][posX].setState("hwall");
 		            tilesArray[mazeSizeHeight-1][posX].setState("hwall");
+		            
+		            updateUI();
 		        }
 	        }
 	    
@@ -154,6 +176,9 @@ public class MainClass {
 	    	int startX = random.nextInt(mazeSizeWidth-2)+1;
 	    	tilesArray[startY][startX].setState("start");
 	    	System.out.println("[StartPoint] Set at:"+startY+":"+startX);
+	    	
+	    	updateUI();
+	    	
 			return tilesArray[startY][startX];
         }
 	    
@@ -179,14 +204,17 @@ public class MainClass {
 			 TileClass cTile=fromTile;
 			 
 			 for (int cLength = 1;cLength<=length;cLength++){
-				 System.out.println("[PATH] Generating #"+cLength+" tile");
+				 System.out.println("[PATH] Generating #"+cLength+" tile of path");
 				 TileClass newTile = generateNextTile(cTile,cPath);
 				 if (newTile == cTile) {break;}
 				 else{
 					 cTile = newTile;
 					 cPath.addTile(newTile);
 				 }
+				 
+				 updateUI();
 			 }
+			 cTile.assignPath(cPath, cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
 		 }
 		 
 		 //TODO: Sum of percentages have to be 100, not 99.9999
@@ -417,10 +445,11 @@ public class MainClass {
 								}
 							 
 							//Setting state of generated Tile as path
-							 newTile.setState("path");
-							 newTile.assignPath(cPath, ccKey);
+							newTile.setState("path");
+							fromTile.assignPath(cPath,ccKey);
 							 
 							System.out.println("[TILE] Generating new tile at ["+ccKey+"]. Coords: "+newTile.getCoords()[0]+";"+newTile.getCoords()[1]);
+							System.out.println("[TILE] Assigning this tile to path#"+cPath.getID());
 					 		
 					 		break;
 					 	}
@@ -430,7 +459,18 @@ public class MainClass {
 		 }
 		 
 		 public void generateIntersections(PathClass path){
+			 double intersectionChance = (double) path.getLength();
+			 String cDirection = path.getTiles().get(0).getDirection(path);
 			 
+			 for (TileClass cTile : path.getTiles()) {
+				    cTile.getDirection(path);
+				    if (cTile.getDirection(path) != cDirection){
+				    	cDirection = cTile.getDirection(path);
+				    	cTile.setState("turn");
+				    }
+				    
+				    updateUI();
+				}
 		 }
 	}
 }

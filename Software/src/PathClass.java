@@ -13,10 +13,25 @@ public class PathClass {
 	
 	public void addTile(TileClass tile){
 		this.tiles.add(tile);
+		this.length +=1;
 	}
+	
+	/*
+	public void deleteTile(TileClass tile){
+		this.tiles.remove(tile);
+		this.length -=1;
+	}
+	*/
 	
 	public int getID(){
 		return this.ID;
 	}
-
+	
+	public int getLength(){
+		return this.length;
+	}
+	
+	public ArrayList<TileClass> getTiles(){
+		return tiles;
+	}
 }
