@@ -4,6 +4,7 @@ public class PathClass {
 	private int ID;	//Unique ID
 	private int length;	//Length of the path
 	private int distance;	//Maximum distance from the ...
+	//private ArrayList<TileClass> intersections = new ArrayList<TileClass>();	//Intersections on path
 	private ArrayList<TileClass> tiles = new ArrayList<TileClass>();	//Assigned Tiles
 	
 	public PathClass(int ID,TileClass startTile){
@@ -33,5 +34,15 @@ public class PathClass {
 	
 	public ArrayList<TileClass> getTiles(){
 		return tiles;
+	}
+	
+	public int countDistanceFromLastIntersection(){
+		TileClass lastCrossTile = tiles.get(0);
+		for (TileClass cTile : tiles){
+			if (cTile.getState() == "cross"){
+				lastCrossTile = cTile;
+			}
+		}
+		return tiles.size()-tiles.indexOf(lastCrossTile)-1;
 	}
 }

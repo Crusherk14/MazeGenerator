@@ -44,6 +44,8 @@ public class MainWindow {
 	private JTextField textField_TileSize;
 	private JLabel lblGenerationdelay;
 	private JTextField textField_GenerationDelay;
+	
+	private aTask task = new aTask();
 
 	/**
 	 * Launch the application.
@@ -101,9 +103,21 @@ public class MainWindow {
 				MainClass.mazeSizeHeight = Integer.parseInt(textField_Height.getText());
 				MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
 				
+				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
+					task.cancel(true);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				grid = new MainClass.Grid();
 				grid.clearData();
 				
-				aTask task = new aTask();
+				
+				task = new aTask();
 				task.execute();
 				/*
 				generator.FillBorders();
@@ -169,7 +183,8 @@ public class MainWindow {
 	       public Void doInBackground() {
 	    	   	generator.FillBorders();
 				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
-				generator.generateIntersections(MainClass.pathsArray.get(0));
+				//TileClass finishPoint = MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1);
+				generator.setFinishPoint(MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1));
 			return null;
 	       }
 	   }

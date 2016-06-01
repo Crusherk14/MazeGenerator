@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JComponent;
@@ -82,6 +83,10 @@ public class MainClass {
         				g.setColor(Color.GREEN);			//GREEN
         				g.fillRect(cellY, cellX, tileSize, tileSize);
         				break;
+        			case "finish":
+        				g.setColor(Color.ORANGE);			//ORANGE
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
+        				break;
         			case "path":
         				g.setColor(new Color(30,144,255));	//BLUE
         				g.fillRect(cellY, cellX, tileSize, tileSize);
@@ -90,7 +95,12 @@ public class MainClass {
         				g.setColor(new Color(155,100,255));	//PURPLE
         				g.fillRect(cellY, cellX, tileSize, tileSize);
         				break;
+        			case "cross":
+        				g.setColor(new Color(155,160,255));	//SOME?
+        				g.fillRect(cellY, cellX, tileSize, tileSize);
+        				break;
         			}
+        			
             	}
         	}
         	
@@ -126,6 +136,7 @@ public class MainClass {
         	for (int posY = 0; posY < mazeSizeHeight; posY++){
         		for (int posX = 0; posX < mazeSizeWidth; posX++){
         			tilesArray[posY][posX] = new TileClass(posY*mazeSizeWidth+posX,posY,posX);
+        			tilesArray[posY][posX].setState("empty");
             	}
         	}
         }
@@ -160,13 +171,13 @@ public class MainClass {
 		     		tilesArray[posY][0].setState("hwall");
 		     		tilesArray[posY][mazeSizeWidth-1].setState("hwall");
 		     		
-		     		updateUI();
+		     		//updateUI();
 		        }
 		        for (int posX = 0; posX<mazeSizeWidth; posX++){
 		        	tilesArray[0][posX].setState("hwall");
 		            tilesArray[mazeSizeHeight-1][posX].setState("hwall");
 		            
-		            updateUI();
+		            //updateUI();
 		        }
 	        }
 	    
@@ -183,17 +194,20 @@ public class MainClass {
         }
 	    
 	    //Sets finishing tile as Finish
-	    public void setFinishPoint(TileClass tile){
+	    public void setFinishPoint(TileClass cTile){
+	    	System.out.println("[FinishPoint] Set at:"+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
+	    	cTile.setState("finish");
+	    	/*
+	    	Map<String, TileClass> surroundTiles = getSurroundTiles(cTile, new String[]{"empty"});
 	    	
+	    	for (String cKey : surroundTiles.keySet()) {
+				 	surroundTiles.get(cKey).setState("wall");
+				}
+	    	*/
+	    	updateUI();
+	    	
+	    	setWalls(cTile);
 	    }
-		 
-		 public void clearMaze(){
-			 for (int posY = 0; posY < mazeSizeHeight; posY++){
-	        		for (int posX = 0; posX < mazeSizeWidth; posX++){
-	        			tilesArray[posY][posX].setState("empty");
-	        		}
-				 }
-		 }
 		 
 		 public void generatePath(TileClass fromTile,int length){
 			 PathClass cPath = new PathClass(pathsArray.size(),fromTile);
@@ -204,17 +218,21 @@ public class MainClass {
 			 TileClass cTile=fromTile;
 			 
 			 for (int cLength = 1;cLength<=length;cLength++){
-				 System.out.println("[PATH] Generating #"+cLength+" tile of path");
+				 System.out.println("[PATH] Generating #"+cLength+" tile of path #"+cPath.getID());
 				 TileClass newTile = generateNextTile(cTile,cPath);
 				 if (newTile == cTile) {break;}
 				 else{
+					 generateIntersection(cPath,cTile);
+					 //setWalls(cTile);
+					 
 					 cTile = newTile;
 					 cPath.addTile(newTile);
+					 
 				 }
-				 
-				 updateUI();
+				 //updateUI();
 			 }
 			 cTile.assignPath(cPath, cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
+			 //System.out.println("[TILE] Path and direction assigned to this tile. Path:"+cPath.getID()+" Dir:"+cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
 		 }
 		 
 		 //TODO: Sum of percentages have to be 100, not 99.9999
@@ -253,15 +271,14 @@ public class MainClass {
 			 //Getting surroundings
 			 surroundTiles = getSurroundTiles(fromTile, new String[]{"empty"});
 			 
-			 System.out.print("[TILE] Free surroundings: ");
-			 for (String cKey : surroundTiles.keySet()) {
-				 System.out.print(cKey+";");
-				}
-			 System.out.println();
-			 
 			 //Checking if there is any available tiles to go
 			 if (surroundTiles.size() != 0){
-				 System.out.println("[TILE] Available tiles to generate: "+surroundTiles.size());
+				 
+				 System.out.print("[TILE] Free surroundings: ");
+				 for (String cKey : surroundTiles.keySet()) {
+					 System.out.print(cKey+";");
+					}
+				 System.out.println();
 			 
 				 //Checking directions
 				 TileClass cTile;
@@ -440,9 +457,13 @@ public class MainClass {
 					 		newTile = surroundTiles.get(ccKey);
 					 		
 					 		//Setting state of previous surroundings as wall
+					 		/*
 							 for (String cccKey : surroundTiles.keySet()) {
 								 	surroundTiles.get(cccKey).setState("wall");
 								}
+							*/
+					 		
+					 		//setWalls(fromTile);
 							 
 							//Setting state of generated Tile as path
 							newTile.setState("path");
@@ -454,10 +475,74 @@ public class MainClass {
 					 		break;
 					 	}
 					}
+				 updateUI();
+			 }else{
+				 System.out.println("[TILE] Unable to generate new tile. No free surround tiles.");
 			 }
 			 return newTile;
 		 }
 		 
+		 public void setWalls (TileClass cTile){
+			 Map<String, TileClass> surroundTiles = getSurroundTiles(cTile, new String[]{"empty","wall"});
+		    	
+		    	for (String cKey : surroundTiles.keySet()) {
+			    		switch (surroundTiles.get(cKey).getState()){
+		        			case "empty":
+		        				surroundTiles.get(cKey).setState("wall");
+		        				break;
+		        			case "wall":
+		        				surroundTiles.get(cKey).setState("hwall");
+		        				break;
+			    		}
+					}
+		    updateUI();
+		 }
+		 
+		 public void generateIntersection(PathClass cPath, TileClass cTile){
+			 int pathLength = cPath.getLength();
+			 int distanceFrom = cPath.countDistanceFromLastIntersection();
+			 double crossingChance = (double) distanceFrom/pathLength*80;
+			 if (cTile.getState()=="turn"){crossingChance+=10;}
+			 if (getSurroundTiles(cTile, new String[]{"empty","wall"}).size() < 2){crossingChance = 0;}
+			 
+			 System.out.println("[CROSS] Path length: "+pathLength);
+			 System.out.println("[CROSS] Distance from this tile to last intersection:"+distanceFrom);
+			 System.out.println("[CROSS] Chance for this tile:"+crossingChance);
+			 
+			 int roll = 1+random.nextInt(99);
+			 if (roll <= crossingChance){
+				 cTile.setState("cross");
+				 System.out.println("[CROSS] Generating new intersection at: "+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
+				 
+				 /*
+				 class newPath extends SwingWorker<Void, Object> {
+				       @Override
+				       public Void doInBackground() {
+							generatePath(cTile, 6);
+						return null;
+				       }
+				   }
+				 
+				 newPath task = new newPath();
+				 task.execute();
+				 */
+				 
+				 //updateUI();
+				 /*
+				 try {
+					    Thread.sleep(generationDelay);
+					    setWalls(cTile);
+					} catch(InterruptedException ex) {
+					    Thread.currentThread().interrupt();
+					}
+				 
+				 updateUI();
+				  */
+			 }
+			 setWalls(cTile);
+		 }
+		 
+		 /*
 		 public void generateIntersections(PathClass path){
 			 double intersectionChance = (double) path.getLength();
 			 String cDirection = path.getTiles().get(0).getDirection(path);
@@ -472,5 +557,6 @@ public class MainClass {
 				    updateUI();
 				}
 		 }
+		 */
 	}
 }

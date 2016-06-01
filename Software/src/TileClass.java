@@ -7,7 +7,7 @@ public class TileClass {
 	private int ID;	//Unique ID
 	private int coordinate[] = new int[2];	//Y;X coordinates
 	state state;
-	public enum state{ empty, wall, hwall, start, finish, path, turn };
+	public enum state{ empty, wall, hwall, start, finish, path, turn, cross };
 	direction direction;
 	public enum direction { up, down, left, right };
 	//private ArrayList<Integer> paths = new ArrayList<Integer>(4);	//Assigned paths
