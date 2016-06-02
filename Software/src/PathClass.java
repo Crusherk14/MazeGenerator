@@ -21,13 +21,6 @@ public class PathClass {
 		this.intersections.add(tile);
 	}
 	
-	/*
-	public void deleteTile(TileClass tile){
-		this.tiles.remove(tile);
-		this.length -=1;
-	}
-	*/
-	
 	public int getID(){
 		return this.ID;
 	}

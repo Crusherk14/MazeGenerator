@@ -10,7 +10,7 @@ public class TileClass {
 	public enum state{ empty, wall, hwall, start, finish, path, turn, cross };
 	direction direction;
 	public enum direction { up, down, left, right };
-	//private ArrayList<Integer> paths = new ArrayList<Integer>(4);	//Assigned paths
+	
 	private Map<PathClass,direction> paths = new HashMap<PathClass,direction>();
 	
 	public TileClass(int ID,int posY,int posX){

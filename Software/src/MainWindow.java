@@ -57,6 +57,8 @@ public class MainWindow {
 	private aTask task = new aTask();
 	private JCheckBox chckbxNewCheckBox;
 	private JLabel lblRealtimeVariables;
+	private JButton btnSaveTo;
+	private JButton btnLoadFrom;
 
 	/**
 	 * Launch the application.
@@ -96,7 +98,7 @@ public class MainWindow {
 		
 		JPanel Parameters = new JPanel();
 		frame.getContentPane().add(Parameters, "cell 0 0,grow");
-		Parameters.setLayout(new MigLayout("", "[][][100,grow]", "[20px][][20px][20px][][][][][]"));
+		Parameters.setLayout(new MigLayout("", "[][][100,grow]", "[20px][][20px][20px][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		
 		grid = new MainClass.Grid();
 		grid.initArray();
@@ -117,9 +119,8 @@ public class MainWindow {
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
 					task.cancel(true);
 					try {
-						Thread.sleep(100);
+						Thread.sleep(200);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -127,17 +128,8 @@ public class MainWindow {
 				grid = new MainClass.Grid();
 				grid.clearData();
 				
-				
 				task = new aTask();
 				task.execute();
-				/*
-				generator.FillBorders();
-				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
-				generator.generateIntersections(MainClass.pathsArray.get(0));
-				*/
-				
-				//grid.repaintCells();
-				
 			}
 		});
 		Parameters.add(btnNewButton, "cell 0 0 3 1,growx,aligny center");
@@ -206,11 +198,30 @@ public class MainWindow {
 		
 		chckbxNewCheckBox = new JCheckBox("Black&White Mode");
 		Parameters.add(chckbxNewCheckBox, "cell 0 8 3 1,alignx right");
+		
 		chckbxNewCheckBox.addItemListener(new ItemListener() {
 		    public void itemStateChanged(ItemEvent e) {
 		        MainClass.bawMode = chckbxNewCheckBox.isSelected();
+		        generator.updateUI();
 		    }
 		});
+		
+		//Save and Load
+				btnLoadFrom = new JButton("Load From");
+				Parameters.add(btnLoadFrom, "cell 0 28 3 1,alignx center,aligny center");
+				btnLoadFrom.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						//Loading methods
+					}
+				});
+				
+				btnSaveTo = new JButton("Save To");
+				Parameters.add(btnSaveTo, "cell 0 29 3 1,alignx center,aligny center");
+				btnSaveTo.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						//Saving methods
+					}
+				});
 	}
 	
 	class aTask extends SwingWorker<Void, Object> {
@@ -218,9 +229,6 @@ public class MainWindow {
 	       public Void doInBackground() {
 	    	   	generator.FillBorders();
 				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
-				//TileClass finishPoint = MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1);
-				//generator.setFinishPoint(MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1));
-				//generator.generateSubPaths();
 			return null;
 	       }
 	   }

@@ -418,17 +418,7 @@ public class MainClass {
 					 Integer[] params = {distanceAbs,distanceBlock};
 					 surroundTilesParameters.put(cKey,params);
 					 
-					 //double summaryChance = distanceAbs*GEN_TILE_COEFFICIENT_distanceAbs+distanceBlock*GEN_TILE_COEFFICIENT_distanceBlock;	// put different values with their coefficients
-					 //surroundTilesChance.put(cKey, summaryChance);
 				 }
-				 
-				 //Getting sum of all chances
-				 /*
-				 double sumChance = 0;
-				 for (Double cChance : surroundTilesChance.values()) {
-					    sumChance += cChance;
-					}
-				  */
 				 
 				 //Calculating percentages
 				 //Getting sum of distanceAbs
@@ -485,15 +475,6 @@ public class MainClass {
 					 	System.out.println("[TILE] Checking percentage for ["+ccKey+"|"+surroundTilesChances.get(ccKey)+"]. "+roll+" have to be under "+lastPercent);
 					 	if (roll<=lastPercent){
 					 		newTile = surroundTiles.get(ccKey);
-					 		
-					 		//Setting state of previous surroundings as wall
-					 		/*
-							 for (String cccKey : surroundTiles.keySet()) {
-								 	surroundTiles.get(cccKey).setState("wall");
-								}
-							*/
-					 		
-					 		//setWalls(fromTile);
 							 
 							//Setting state of generated Tile as path
 							newTile.setState("path");
@@ -528,6 +509,7 @@ public class MainClass {
 		    updateUI();
 		 }
 		 
+		 //Generates intersections and walls
 		 public void generateIntersection(PathClass cPath, TileClass cTile){
 			 int pathLength = cPath.getLength();
 			 int distanceFrom = cPath.countDistanceFromLastIntersection();
@@ -545,30 +527,6 @@ public class MainClass {
 				 cPath.addCrossing(cTile);
 				 System.out.println("[CROSS] Generating new intersection at: "+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
 				 
-				 /*
-				 class newPath extends SwingWorker<Void, Object> {
-				       @Override
-				       public Void doInBackground() {
-							generatePath(cTile, 6);
-						return null;
-				       }
-				   }
-				 
-				 newPath task = new newPath();
-				 task.execute();
-				 */
-				 
-				 //updateUI();
-				 /*
-				 try {
-					    Thread.sleep(generationDelay);
-					    setWalls(cTile);
-					} catch(InterruptedException ex) {
-					    Thread.currentThread().interrupt();
-					}
-				 
-				 updateUI();
-				  */
 			 }
 			 setWalls(cTile);
 		 }
