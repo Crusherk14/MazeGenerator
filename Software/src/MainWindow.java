@@ -2,39 +2,21 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
-import java.awt.BorderLayout;
 import javax.swing.JTextField;
 import javax.swing.BoxLayout;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.UIManager;
-import java.awt.Color;
-import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
 import javax.swing.JPanel;
-import java.awt.GridLayout;
-import java.awt.Component;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JScrollPane;
 import javax.swing.JCheckBox;
-import javax.swing.Box;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 
 
 public class MainWindow {
@@ -118,15 +100,11 @@ public class MainWindow {
 				
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
 					task.cancel(true);
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					grid.clearData();
 				}
 				
 				grid = new MainClass.Grid();
-				grid.clearData();
+				grid.initArray();
 				
 				task = new aTask();
 				task.execute();

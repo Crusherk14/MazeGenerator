@@ -1,31 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.SwingWorker;
-import javax.swing.border.TitledBorder;
-import javax.swing.JLabel;
-import javax.swing.JComponent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-
-import sun.rmi.runtime.Log;
-
-import javax.swing.table.TableColumnModel;
 
 
 public class MainClass {
@@ -224,13 +205,7 @@ public class MainClass {
 	    public void setFinishPoint(TileClass cTile){
 	    	System.out.println("[FinishPoint] Set at:"+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
 	    	cTile.setState("finish");
-	    	/*
-	    	Map<String, TileClass> surroundTiles = getSurroundTiles(cTile, new String[]{"empty"});
 	    	
-	    	for (String cKey : surroundTiles.keySet()) {
-				 	surroundTiles.get(cKey).setState("wall");
-				}
-	    	*/
 	    	updateUI();
 	    	
 	    	setWalls(cTile);
@@ -250,7 +225,6 @@ public class MainClass {
 				 if (newTile == cTile) {break;}
 				 else{
 					 generateIntersection(cPath,cTile);
-					 //setWalls(cTile);
 					 
 					 cTile = newTile;
 					 cPath.addTile(newTile);
@@ -260,7 +234,7 @@ public class MainClass {
 			 }
 			 setWalls(cTile);
 			 cTile.assignPath(cPath, cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
-			 //System.out.println("[TILE] Path and direction assigned to this tile. Path:"+cPath.getID()+" Dir:"+cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
+			 System.out.println("[PATH] Finishing path#"+cPath.getID());
 			 if (cPath.getID()==0){setFinishPoint(cPath.getTiles().get(cPath.getLength()-1));}
 			 generateSubPaths();
 		 }
