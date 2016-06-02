@@ -100,9 +100,16 @@ public class MainWindow {
 				
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
 					task.cancel(true);
+					
 					grid.clearData();
+					
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
 				}
-				
 				grid = new MainClass.Grid();
 				grid.initArray();
 				
