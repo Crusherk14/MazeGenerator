@@ -9,6 +9,8 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.UIManager;
 import java.awt.Color;
 import javax.swing.border.SoftBevelBorder;
@@ -24,8 +26,15 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
+import javax.swing.JCheckBox;
+import javax.swing.Box;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 
 public class MainWindow {
@@ -46,6 +55,8 @@ public class MainWindow {
 	private JTextField textField_GenerationDelay;
 	
 	private aTask task = new aTask();
+	private JCheckBox chckbxNewCheckBox;
+	private JLabel lblRealtimeVariables;
 
 	/**
 	 * Launch the application.
@@ -75,7 +86,7 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 700, 550);
+		frame.setBounds(100, 100, 1200, 900);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new MigLayout("", "[][grow]", "[grow]"));
 		
@@ -85,7 +96,7 @@ public class MainWindow {
 		
 		JPanel Parameters = new JPanel();
 		frame.getContentPane().add(Parameters, "cell 0 0,grow");
-		Parameters.setLayout(new MigLayout("", "[][100,grow]", "[20px][][20px][20px][][]"));
+		Parameters.setLayout(new MigLayout("", "[][][100,grow]", "[20px][][20px][20px][][][][][]"));
 		
 		grid = new MainClass.Grid();
 		grid.initArray();
@@ -101,7 +112,7 @@ public class MainWindow {
 				MainClass.tileSize = Integer.parseInt(textField_TileSize.getText());
 				MainClass.mazeSizeWidth = Integer.parseInt(textField_Width.getText());
 				MainClass.mazeSizeHeight = Integer.parseInt(textField_Height.getText());
-				MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
+				//MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
 				
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
 					task.cancel(true);
@@ -129,7 +140,7 @@ public class MainWindow {
 				
 			}
 		});
-		Parameters.add(btnNewButton, "cell 1 0,growx,aligny center");
+		Parameters.add(btnNewButton, "cell 0 0 3 1,growx,aligny center");
 		
 		lblTilesize = new JLabel("TileSize");
 		Parameters.add(lblTilesize, "cell 0 1,alignx center");
@@ -137,16 +148,16 @@ public class MainWindow {
 		textField_TileSize = new JTextField();
 		textField_TileSize.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_TileSize.setText("10");
-		Parameters.add(textField_TileSize, "cell 1 1,growx");
+		Parameters.add(textField_TileSize, "cell 2 1,growx");
 		textField_TileSize.setColumns(10);
 		
 		lblHeight = new JLabel("Height");
 		Parameters.add(lblHeight, "cell 0 2,alignx center");
 		
 		textField_Width = new JTextField();
-		textField_Width.setText("30");
+		textField_Width.setText("80");
 		textField_Width.setHorizontalAlignment(SwingConstants.CENTER);
-		Parameters.add(textField_Width, "cell 1 2,growx,aligny top");
+		Parameters.add(textField_Width, "cell 2 2,growx,aligny top");
 		textField_Width.setColumns(10);
 		
 		lblWidth = new JLabel("Width");
@@ -154,9 +165,9 @@ public class MainWindow {
 		Parameters.add(lblWidth, "cell 0 3,alignx center");
 		
 		textField_Height = new JTextField();
-		textField_Height.setText("30");
+		textField_Height.setText("80");
 		textField_Height.setHorizontalAlignment(SwingConstants.CENTER);
-		Parameters.add(textField_Height, "cell 1 3,growx,aligny top");
+		Parameters.add(textField_Height, "cell 2 3,growx,aligny top");
 		textField_Height.setColumns(10);
 		
 		lblPathlength = new JLabel("PathLength (%)");
@@ -166,16 +177,40 @@ public class MainWindow {
 		textField_PathLength.setText("5");
 		textField_PathLength.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_PathLength.setColumns(10);
-		Parameters.add(textField_PathLength, "cell 1 4,growx");
+		Parameters.add(textField_PathLength, "cell 2 4,growx");
+		
+		lblRealtimeVariables = new JLabel("Realtime variables:");
+		Parameters.add(lblRealtimeVariables, "cell 0 6 3 1,alignx center,aligny center");
 		
 		lblGenerationdelay = new JLabel("GenerationDelay (ms)");
-		Parameters.add(lblGenerationdelay, "cell 0 5,alignx center");
+		Parameters.add(lblGenerationdelay, "cell 0 7,alignx center");
 		
 		textField_GenerationDelay = new JTextField();
 		textField_GenerationDelay.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_GenerationDelay.setText("20");
-		Parameters.add(textField_GenerationDelay, "cell 1 5,growx");
+		textField_GenerationDelay.setText("5");
+		Parameters.add(textField_GenerationDelay, "cell 2 7,growx");
 		textField_GenerationDelay.setColumns(10);
+		textField_GenerationDelay.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//empty
+		    }
+		    public void removeUpdate(DocumentEvent e) {
+		    	if (textField_GenerationDelay.getText().length()>0){
+		    		MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
+		    	}
+		    }
+		    public void insertUpdate(DocumentEvent e) {
+		    	MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
+		    }
+		});
+		
+		chckbxNewCheckBox = new JCheckBox("Black&White Mode");
+		Parameters.add(chckbxNewCheckBox, "cell 0 8 3 1,alignx right");
+		chckbxNewCheckBox.addItemListener(new ItemListener() {
+		    public void itemStateChanged(ItemEvent e) {
+		        MainClass.bawMode = chckbxNewCheckBox.isSelected();
+		    }
+		});
 	}
 	
 	class aTask extends SwingWorker<Void, Object> {
@@ -184,8 +219,8 @@ public class MainWindow {
 	    	   	generator.FillBorders();
 				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
 				//TileClass finishPoint = MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1);
-				generator.setFinishPoint(MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1));
-				generator.generateSubPaths();
+				//generator.setFinishPoint(MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1));
+				//generator.generateSubPaths();
 			return null;
 	       }
 	   }

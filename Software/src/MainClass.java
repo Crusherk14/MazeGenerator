@@ -45,6 +45,8 @@ public class MainClass {
 
 	public static Random random = new Random();
 	
+	public static boolean bawMode = false;
+	
 	
 	public static void main(String[] args){	
 
@@ -70,36 +72,61 @@ public class MainClass {
                     int cellX = tileSize + (posX * tileSize);
                     
                     //TODO: check if tilesArray is empty at start?
-        			switch (tilesArray[posY][posX].getState()){
-        			case "wall":
-        				g.setColor(new Color(150,150,150));	//GRAY
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			case "hwall":
-        				g.setColor(new Color(90,90,90));	//DARK_GRAY
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			case "start":
-        				g.setColor(Color.GREEN);			//GREEN
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			case "finish":
-        				g.setColor(Color.ORANGE);			//ORANGE
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			case "path":
-        				g.setColor(new Color(30,144,255));	//BLUE
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			case "turn":
-        				g.setColor(new Color(155,100,255));	//PURPLE
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			case "cross":
-        				g.setColor(new Color(155,160,255));	//SOME?
-        				g.fillRect(cellY, cellX, tileSize, tileSize);
-        				break;
-        			}
+                    if (!bawMode){
+	        			switch (tilesArray[posY][posX].getState()){
+		        			case "wall":
+		        				g.setColor(new Color(150,150,150));	//GRAY
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "hwall":
+		        				g.setColor(new Color(90,90,90));	//DARK_GRAY
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "start":
+		        				g.setColor(Color.GREEN);			//GREEN
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "finish":
+		        				g.setColor(Color.ORANGE);			//ORANGE
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "path":
+		        				g.setColor(new Color(30,144,255));	//BLUE
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "turn":
+		        				g.setColor(new Color(155,100,255));	//PURPLE
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "cross":
+		        				g.setColor(new Color(155,160,255));	//SOME?
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+	        			}
+                    }else{
+                    	switch (tilesArray[posY][posX].getState()){
+                    	case "empty":
+	        				g.setColor(new Color(150,150,150));	//GRAY
+	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	        				break;
+	        			case "wall":
+	        				g.setColor(new Color(150,150,150));	//GRAY
+	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	        				break;
+	        			case "hwall":
+	        				g.setColor(new Color(150,150,150));	//GRAY
+	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	        				break;
+	        			case "start":
+	        				g.setColor(Color.GREEN);			//GREEN
+	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	        				break;
+	        			case "finish":
+	        				g.setColor(Color.ORANGE);			//ORANGE
+	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	        				break;
+                    	}
+                    }
         			
             	}
         	}
@@ -231,8 +258,11 @@ public class MainClass {
 				 }
 				 //updateUI();
 			 }
+			 setWalls(cTile);
 			 cTile.assignPath(cPath, cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
 			 //System.out.println("[TILE] Path and direction assigned to this tile. Path:"+cPath.getID()+" Dir:"+cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
+			 if (cPath.getID()==0){setFinishPoint(cPath.getTiles().get(cPath.getLength()-1));}
+			 generateSubPaths();
 		 }
 		 
 		 //TODO: Sum of percentages have to be 100, not 99.9999
@@ -575,7 +605,13 @@ public class MainClass {
 						 }
 						 
 						//Generating new path
-						 generatePath(cCross,(int) Math.round(cPath.getLength()/2));
+						 int randomLength;
+						 if (random.nextInt(100)>=70){
+							 randomLength = cPath.getLength()+random.nextInt(cPath.getLength()*2);
+						 }else{
+							 randomLength = Math.round(cPath.getLength()/2)+random.nextInt(cPath.getLength());
+						 }
+						 generatePath(cCross,randomLength);
 					 }
 				 }
 			 }
