@@ -512,6 +512,7 @@ public class MainClass {
 			 int roll = 1+random.nextInt(99);
 			 if (roll <= crossingChance){
 				 cTile.setState("cross");
+				 cPath.addCrossing(cTile);
 				 System.out.println("[CROSS] Generating new intersection at: "+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
 				 
 				 /*
@@ -558,5 +559,26 @@ public class MainClass {
 				}
 		 }
 		 */
+		 
+		 //TODO: Finish subPaths
+		 
+		 public void generateSubPaths(){
+			 for (PathClass cPath : pathsArray) {
+				 for (TileClass cCross : cPath.getCrossings()) {
+					 //Clearing the area from low walls
+					 Map<String, TileClass> surroundTiles = getSurroundTiles(cCross,new String[]{"empty","wall"});
+					 if (surroundTiles.size()>0){
+						 for (String cKey : surroundTiles.keySet()) {
+							 if (surroundTiles.get(cKey).getState() == "wall"){
+								 surroundTiles.get(cKey).setState("empty");
+							 }
+						 }
+						 
+						//Generating new path
+						 generatePath(cCross,(int) Math.round(cPath.getLength()/2));
+					 }
+				 }
+			 }
+		 }
 	}
 }

@@ -185,6 +185,7 @@ public class MainWindow {
 				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
 				//TileClass finishPoint = MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1);
 				generator.setFinishPoint(MainClass.pathsArray.get(0).getTiles().get(MainClass.pathsArray.get(0).getTiles().size()-1));
+				generator.generateSubPaths();
 			return null;
 	       }
 	   }
