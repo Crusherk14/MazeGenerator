@@ -1,0 +1,118 @@
+import java.io.*;
+
+public class LoaderSaver {
+	
+	class InvalidByteException extends Exception{
+		private static final long serialVersionUID = 1L;
+		byte wrongByte;
+		
+		public InvalidByteException(byte wrongByte){
+			this.wrongByte = (byte) wrongByte;
+		}
+	}
+	
+	public static void Loader(String path, String fileName) throws IOException{
+		try{
+			File mazeFile = new File(path + "//" + fileName + ".maze");
+			FileInputStream fis = new FileInputStream(mazeFile);
+			DataInputStream dis = new DataInputStream(fis);
+			MainClass.mazeSizeHeight = dis.readInt();
+			MainClass.mazeSizeHeight = dis.readInt();
+			TileClass[][] tilesArray = new TileClass[MainClass.mazeSizeHeight][MainClass.mazeSizeHeight];
+			for(int i = 0; i < MainClass.mazeSizeHeight; i++){
+				for(int j = 0; j < MainClass.mazeSizeWidth; j++){
+					byte b = (byte) fis.read();
+					switch(b){
+						case(1): {
+							tilesArray[i][j].setState("empty");
+							break;
+						}
+						case(2): {
+							tilesArray[i][j].setState("wall");
+							break;
+						}
+						case(3): {
+							tilesArray[i][j].setState("hwall");
+							break;
+						}
+						case(4): {
+							tilesArray[i][j].setState("start");
+							break;
+						}
+						case(5): {
+							tilesArray[i][j].setState("finish");
+							break;
+						}
+						case(6): {
+							tilesArray[i][j].setState("path");
+							break;
+						}
+						case(7): {
+							tilesArray[i][j].setState("turn");
+							break;
+						}
+						case(8): {
+							tilesArray[i][j].setState("cross");
+							break;
+						}
+						default: {
+							throw new LoaderSaver().new InvalidByteException((byte) b);
+						}
+					}
+				}
+			}
+		}
+		catch (InvalidByteException e){
+			System.out.println("Error!");
+		}
+	}
+	
+	public static void Saver(String path, String fileName) throws IOException{
+		File mazeFile = new File(path + "//" + fileName + ".maze"); 
+		FileOutputStream fos = new FileOutputStream(mazeFile);
+		DataOutputStream dos = new DataOutputStream(fos);
+		dos.writeInt(MainClass.mazeSizeWidth);
+		dos.writeInt(MainClass.mazeSizeHeight);
+		for(int i=0; i<=MainClass.mazeSizeHeight-1; i++){
+			for(int j=0; j<=MainClass.mazeSizeWidth-1; j++){
+				switch(MainClass.tilesArray[i][j].getState()){
+					case("empty"): {
+						fos.write(1);
+						break;
+					}
+					case("wall"): {
+						fos.write(2);
+						break;
+					}
+					case("hwall"): {
+						fos.write(3);
+						break;
+					}
+					case("start"): {
+						fos.write(4);
+						break;
+					}
+					case("finish"): {
+						fos.write(5);
+						break;
+					}
+					case("path"): {
+						fos.write(6);
+						break;
+					}
+					case("turn"): {
+						fos.write(7);
+						break;
+					}
+					case("cross"): {
+						fos.write(8);
+						break;
+					}
+					default:
+						
+				}
+			}
+		}
+		fos.close();
+	}
+}
