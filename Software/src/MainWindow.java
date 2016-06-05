@@ -28,7 +28,7 @@ public class MainWindow {
 	
 	public static MainClass.Grid grid;
 	public static MainClass.Generator generator;
-	public static LoaderSaver loaderSaver;
+	public static LoadManager loaderSaver;
 	private JTextField textField_PathLength;
 	private JLabel lblHeight;
 	private JLabel lblWidth;
