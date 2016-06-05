@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 
@@ -27,6 +28,7 @@ public class MainWindow {
 	
 	public static MainClass.Grid grid;
 	public static MainClass.Generator generator;
+	public static LoaderSaver loaderSaver;
 	private JTextField textField_PathLength;
 	private JLabel lblHeight;
 	private JLabel lblWidth;
@@ -197,6 +199,14 @@ public class MainWindow {
 				btnLoadFrom.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						//Loading methods
+						try {
+							MainClass.tileSize = Integer.parseInt(textField_TileSize.getText());
+							MainClass.tilesArray = loaderSaver.loadFile("D:\\", "testMaze");
+							grid.updateUI();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				});
 				
@@ -205,6 +215,12 @@ public class MainWindow {
 				btnSaveTo.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						//Saving methods
+						try {
+							loaderSaver.saveFile("D:\\", "testMaze");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				});
 	}
