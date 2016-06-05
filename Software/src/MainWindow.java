@@ -227,7 +227,7 @@ public class MainWindow {
 							JFileChooser fileopen = new JFileChooser();
 			                int ret = fileopen.showDialog(null, "Save maze");                
 			                if (ret == JFileChooser.APPROVE_OPTION) {
-			                	File mazeFile = new File(fileopen.getSelectedFile().getPath());
+			                	File mazeFile = new File(fileopen.getSelectedFile().getPath() + ".maze");
 			                	LoadManager.saveFile(mazeFile);
 			                }
 			                
