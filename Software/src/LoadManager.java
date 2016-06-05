@@ -16,9 +16,7 @@ public class LoadManager {
 		}
 	}
 	
-	public static TileClass[][] loadFile(String path, String fileName) throws IOException{
-		
-		File mazeFile = new File(path + "//" + fileName + ".maze");
+	public static TileClass[][] loadFile(File mazeFile) throws IOException{
 		FileInputStream fis = new FileInputStream(mazeFile);
 		DataInputStream dis = new DataInputStream(fis);
 		
@@ -84,8 +82,7 @@ public class LoadManager {
 		return tilesArray;
 	}
 	
-	public static void saveFile(String path, String fileName) throws IOException{
-		File mazeFile = new File(path + "//" + fileName + ".maze"); 
+	public static void saveFile(File mazeFile) throws IOException{
 		FileOutputStream fos = new FileOutputStream(mazeFile);
 		DataOutputStream dos = new DataOutputStream(fos);
 		
