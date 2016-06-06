@@ -506,26 +506,6 @@ public class MainClass {
 			 setWalls(cTile);
 		 }
 		 
-		 /*
-		 public void generateIntersections(PathClass path){
-			 double intersectionChance = (double) path.getLength();
-			 String cDirection = path.getTiles().get(0).getDirection(path);
-			 
-			 for (TileClass cTile : path.getTiles()) {
-				    cTile.getDirection(path);
-				    if (cTile.getDirection(path) != cDirection){
-				    	cDirection = cTile.getDirection(path);
-				    	cTile.setState("turn");
-				    }
-				    
-				    updateUI();
-				}
-		 }
-		 */
-		 //test
-		 
-		 //TODO: Finish subPaths
-		 
 		 public void generateSubPaths(){
 			 for (PathClass cPath : pathsArray) {
 				 for (TileClass cCross : cPath.getCrossings()) {

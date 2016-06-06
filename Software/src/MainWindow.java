@@ -106,10 +106,15 @@ public class MainWindow {
 				
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
 					grid.clearData();
+					task.cancel(true);
+					
+					
+					/*
 					while (!task.isCancelled()){
 						task.cancel(true);
 						//wait for task to stop
 					}
+					*/
 				}
 				
 				grid = new MainClass.Grid();
@@ -240,8 +245,19 @@ public class MainWindow {
 	class aTask extends SwingWorker<Void, Object> {
 	       @Override
 	       public Void doInBackground() {
-	    	   	generator.FillBorders();
-				generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
+	    	   Thread generating = new Thread()
+	           {
+	               public void run() {
+	            	   generator.FillBorders();
+					generator.generatePath(generator.setStartPoint(), (int) Math.round(MainClass.mazeSizeWidth*MainClass.mazeSizeHeight/100*Integer.parseInt(textField_PathLength.getText())));
+	               }
+	           };
+	           generating.start();
+	           
+	    	   while (!isCancelled()){
+		    	   	
+	    	   }
+	    	   generating.stop();
 			return null;
 	       }
 	   }
