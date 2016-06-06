@@ -134,6 +134,7 @@ public class MainClass {
         //Clears all variables
         public void clearData(){
     		pathsArray =  new ArrayList<PathClass>();
+    		tilesArray = new TileClass[mazeSizeHeight][mazeSizeWidth];
     		initArray();
     	}
     	

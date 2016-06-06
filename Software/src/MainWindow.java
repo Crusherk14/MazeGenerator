@@ -8,6 +8,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import java.io.File;
 import javax.swing.border.BevelBorder;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
@@ -18,6 +20,7 @@ import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 
 
 public class MainWindow {
@@ -100,20 +103,18 @@ public class MainWindow {
 				MainClass.mazeSizeHeight = Integer.parseInt(textField_Height.getText());
 				//MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
 				
+				
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
-					task.cancel(true);
-					
 					grid.clearData();
-					
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					while (!task.isCancelled()){
+						task.cancel(true);
+						//wait for task to stop
 					}
-					
 				}
+				
 				grid = new MainClass.Grid();
-				grid.initArray();
+				grid.clearData();
+				
 				
 				task = new aTask();
 				task.execute();
@@ -201,8 +202,13 @@ public class MainWindow {
 						//Loading methods
 						try {
 							MainClass.tileSize = Integer.parseInt(textField_TileSize.getText());
-							MainClass.tilesArray = loaderSaver.loadFile("D:\\", "testMaze");
-							grid.updateUI();
+							JFileChooser fileopen = new JFileChooser();
+							int ret = fileopen.showDialog(null, "Load maze");                
+			                if (ret == JFileChooser.APPROVE_OPTION) {
+								File mazeFile = fileopen.getSelectedFile();
+								MainClass.tilesArray = LoadManager.loadFile(mazeFile);
+								generator.updateUI();
+			                }
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -216,7 +222,13 @@ public class MainWindow {
 					public void actionPerformed(ActionEvent arg0) {
 						//Saving methods
 						try {
-							loaderSaver.saveFile("D:\\", "testMaze");
+							JFileChooser fileopen = new JFileChooser();
+			                int ret = fileopen.showDialog(null, "Save maze");                
+			                if (ret == JFileChooser.APPROVE_OPTION) {
+			                	File mazeFile = new File(fileopen.getSelectedFile().getPath() + ".maze");
+			                	LoadManager.saveFile(mazeFile);
+			                }
+			                
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
