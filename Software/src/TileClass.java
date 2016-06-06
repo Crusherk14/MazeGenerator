@@ -1,19 +1,20 @@
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TileClass {
 	
-	private int ID;	//Unique ID
+	private long ID;	//Unique ID
 	private int coordinate[] = new int[2];	//Y;X coordinates
 	state state;
 	public enum state{ empty, wall, hwall, start, finish, path, turn, cross };
 	direction direction;
 	public enum direction { up, down, left, right };
 	
-	private Map<PathClass,direction> paths = new HashMap<PathClass,direction>();
+	private Map<PathClass,direction> assignedPaths = new HashMap<PathClass,direction>();
 	
-	public TileClass(int ID,int posY,int posX){
+	public TileClass(long ID,int posY,int posX){
 		this.ID = ID;
 		this.coordinate[0]=posY;
 		this.coordinate[1]=posX;
@@ -29,7 +30,7 @@ public class TileClass {
 	}
 	
 	public void assignPath(PathClass path, String direction){
-		this.paths.put(path,this.direction.valueOf(direction));
+		this.assignedPaths.put(path,this.direction.valueOf(direction));
 	}
 	
 	public int[] getCoords(){
@@ -37,7 +38,16 @@ public class TileClass {
 	}
 	
 	public String getDirection(PathClass path){
-		//System.out.println("[TileClass] Getting direction of tile at"+coordinate[0]+":"+coordinate[1]);
-		return paths.get(path).toString();
+		return assignedPaths.get(path).toString();
 	}
+	
+	
+	public ArrayList<PathClass> getPaths(){
+		ArrayList<PathClass> paths = new ArrayList<PathClass>();
+		for (PathClass cPath: assignedPaths.keySet()){
+			paths.add(cPath);
+		}
+		return paths;
+	}
+	
 }

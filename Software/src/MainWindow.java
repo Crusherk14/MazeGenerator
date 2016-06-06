@@ -49,6 +49,7 @@ public class MainWindow {
 	private JLabel lblRealtimeVariables;
 	private JButton btnSaveTo;
 	private JButton btnLoadFrom;
+	private JCheckBox chckbxShowAnswer;
 
 	/**
 	 * Launch the application.
@@ -199,6 +200,16 @@ public class MainWindow {
 		chckbxNewCheckBox.addItemListener(new ItemListener() {
 		    public void itemStateChanged(ItemEvent e) {
 		        MainClass.bawMode = chckbxNewCheckBox.isSelected();
+		        generator.updateUI();
+		    }
+		});
+				
+		chckbxShowAnswer = new JCheckBox("Show Answer");
+		Parameters.add(chckbxShowAnswer, "cell 0 9 3 1,alignx right");
+		
+		chckbxShowAnswer.addItemListener(new ItemListener() {
+		    public void itemStateChanged(ItemEvent e) {
+		        MainClass.answerMode = chckbxShowAnswer.isSelected();
 		        generator.updateUI();
 		    }
 		});

@@ -11,14 +11,16 @@ public class UnitTest {
 	public void setUp(){
 		MainClass.mazeSizeHeight = 10;
 		MainClass.mazeSizeWidth = 10;
+		grid = new MainClass.Grid();
 		grid.clearData();
+		generator.FillBorders();
 	}
 	
 	@Test
 	public void test_setWalls() {
 		setUp(); 
-		int posX = 1;
-		int posY = 1;
+		int posX = 2;
+		int posY = 2;
 		TileClass tile = MainClass.tilesArray[posY][posX];
 		generator.setWalls(tile);
 		
@@ -31,7 +33,13 @@ public class UnitTest {
 	
 	@Test
 	public void test_FillBorders() {
-		setUp();
+		//setUp();
+		
+		MainClass.mazeSizeHeight = 10;
+		MainClass.mazeSizeWidth = 10;
+		grid = new MainClass.Grid();
+		grid.clearData();
+		
 		generator.FillBorders();
 		for (int posY = 0; posY < MainClass.mazeSizeHeight; posY++){
 			assertEquals(MainClass.tilesArray[posY][0].getState(),"hwall");
@@ -49,8 +57,8 @@ public class UnitTest {
 	public void test_setStartPoint(){
 		setUp();
 		generator.setStartPoint();
-		for (int posY = 0; posY < MainClass.mazeSizeHeight; posY++){
-			for (int posX = 0; posX < MainClass.mazeSizeWidth; posX++){
+		for (int posY = 1; posY < MainClass.mazeSizeHeight-1; posY++){
+			for (int posX = 1; posX < MainClass.mazeSizeWidth-1; posX++){
 				if (MainClass.tilesArray[posY][posX].getState()!="empty"){
 					assertEquals(MainClass.tilesArray[posY][posX].getState(),"start");
 				}
@@ -58,11 +66,12 @@ public class UnitTest {
 		}
 	}
 	
+	
 	@Test
 	public void test_setFinishPoint(){
 		setUp();
-		int posX = 1;
-		int posY = 1;
+		int posX = 5;
+		int posY = 5;
 		TileClass tile = MainClass.tilesArray[posY][posX];
 		generator.setFinishPoint(tile);
 		
@@ -72,29 +81,29 @@ public class UnitTest {
 		assertEquals(MainClass.tilesArray[posY][posX-1].getState(),"wall");
 		assertEquals(MainClass.tilesArray[posY+1][posX].getState(),"wall");
 		assertEquals(MainClass.tilesArray[posY-1][posX].getState(),"wall");
-		
 	}
+	
 	
 	@Test
 	public void test_generatePath(){
 		setUp();
-		int posX = 1;
-		int posY = 1;
+		int posX = 5;
+		int posY = 5;
 		TileClass tile = MainClass.tilesArray[posY][posX];
 		
 		MainClass.pathsArray = new ArrayList<PathClass>(); 
 		assertEquals(MainClass.pathsArray.size(),0);
-		generator.generatePath(tile, 2);
-		assertTrue(MainClass.pathsArray.size()>0);
 		
+		generator.generatePath(tile, 10);
+		assertTrue(MainClass.pathsArray.size()>0);
 	}
 
 	
 	@Test
 	public void test_generateIntersection(){
 		setUp();
-		int posX = 1;
-		int posY = 1;
+		int posX = 5;
+		int posY = 5;
 		TileClass tile = MainClass.tilesArray[posY][posX];
 		MainClass.pathsArray = new ArrayList<PathClass>(); 
 						
@@ -107,7 +116,6 @@ public class UnitTest {
 				assertEquals(path.getTiles().get(0).getState() ,"cross");	
 			}			
 		}
-			
 	}
 
 }

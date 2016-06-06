@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
 public class PathClass {
-	private int ID;	//Unique ID
+	private long ID;	//Unique ID
 	private int length;	//Length of the path
-	private int distance;	//Maximum distance from the ...
+	//private int distance;	//Maximum distance from the ...
 	private ArrayList<TileClass> intersections = new ArrayList<TileClass>();	//Intersections on path
 	private ArrayList<TileClass> tiles = new ArrayList<TileClass>();	//Assigned Tiles
 	
@@ -21,7 +21,7 @@ public class PathClass {
 		this.intersections.add(tile);
 	}
 	
-	public int getID(){
+	public long getID(){
 		return this.ID;
 	}
 	

@@ -27,6 +27,7 @@ public class MainClass {
 	public static Random random = new Random();
 	
 	public static boolean bawMode = false;
+	public static boolean answerMode = false;
 	
 	
 	public static void main(String[] args){	
@@ -52,7 +53,6 @@ public class MainClass {
         			int cellY = tileSize + (posY * tileSize);
                     int cellX = tileSize + (posX * tileSize);
                     
-                    //TODO: check if tilesArray is empty at start?
                     if (!bawMode){
 	        			switch (tilesArray[posY][posX].getState()){
 		        			case "wall":
@@ -86,29 +86,56 @@ public class MainClass {
 	        			}
                     }else{
                     	switch (tilesArray[posY][posX].getState()){
-                    	case "empty":
-	        				g.setColor(new Color(150,150,150));	//GRAY
-	        				g.fillRect(cellY, cellX, tileSize, tileSize);
-	        				break;
-	        			case "wall":
-	        				g.setColor(new Color(150,150,150));	//GRAY
-	        				g.fillRect(cellY, cellX, tileSize, tileSize);
-	        				break;
-	        			case "hwall":
-	        				g.setColor(new Color(150,150,150));	//GRAY
-	        				g.fillRect(cellY, cellX, tileSize, tileSize);
-	        				break;
-	        			case "start":
-	        				g.setColor(Color.GREEN);			//GREEN
-	        				g.fillRect(cellY, cellX, tileSize, tileSize);
-	        				break;
-	        			case "finish":
-	        				g.setColor(Color.ORANGE);			//ORANGE
-	        				g.fillRect(cellY, cellX, tileSize, tileSize);
-	        				break;
-                    	}
+	                    	case "empty":
+		        				g.setColor(new Color(150,150,150));	//GRAY
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "wall":
+		        				g.setColor(new Color(150,150,150));	//GRAY
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "hwall":
+		        				g.setColor(new Color(150,150,150));	//GRAY
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "start":
+		        				g.setColor(Color.GREEN);			//GREEN
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+		        			case "finish":
+		        				g.setColor(Color.ORANGE);			//ORANGE
+		        				g.fillRect(cellY, cellX, tileSize, tileSize);
+		        				break;
+	                    	}
                     }
-        			
+                    
+                    if (answerMode){
+                    	if (tilesArray[posY][posX].getPaths().indexOf(pathsArray.get(0)) != -1){
+                    		switch (tilesArray[posY][posX].getState()){
+	                    		case "path":
+	    	        				g.setColor(Color.YELLOW);	//YELLOW
+	    	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	    	        				break;
+	                    		case "turn":
+	                    			g.setColor(Color.YELLOW);	//YELLOW
+	    	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	    	        				break;
+	                    		case "cross":
+	                    			g.setColor(Color.YELLOW);	//YELLOW
+	    	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	    	        				break;
+	    	        			case "start":
+	    	        				g.setColor(Color.GREEN);			//GREEN
+	    	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	    	        				break;
+	    	        			case "finish":
+	    	        				g.setColor(Color.ORANGE);			//ORANGE
+	    	        				g.fillRect(cellY, cellX, tileSize, tileSize);
+	    	        				break;
+	                        	}
+                    	}
+                    	
+                    }
             	}
         	}
         	
@@ -170,7 +197,8 @@ public class MainClass {
 				grid.repaintCells();
 			    Thread.sleep(generationDelay);
 			} catch(InterruptedException ex) {
-			    Thread.currentThread().interrupt();
+			    //Thread.currentThread().interrupt();
+				ex.printStackTrace();
 			}
 	    }
 	    
@@ -488,7 +516,7 @@ public class MainClass {
 		 public void generateIntersection(PathClass cPath, TileClass cTile){
 			 int pathLength = cPath.getLength();
 			 int distanceFrom = cPath.countDistanceFromLastIntersection();
-			 double crossingChance = (double) distanceFrom/pathLength*80;
+			 double crossingChance = (double) distanceFrom/pathLength*90;
 			 if (cTile.getState()=="turn"){crossingChance+=10;}
 			 if (getSurroundTiles(cTile, new String[]{"empty","wall"}).size() < 2){crossingChance = 0;}
 			 
