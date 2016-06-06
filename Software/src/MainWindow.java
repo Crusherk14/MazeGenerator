@@ -209,7 +209,7 @@ public class MainWindow {
 			                if (ret == JFileChooser.APPROVE_OPTION) {
 								File mazeFile = fileopen.getSelectedFile();
 								MainClass.tilesArray = LoadManager.loadFile(mazeFile);
-								grid.updateUI();
+								generator.updateUI();
 			                }
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
