@@ -8,6 +8,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;
 import javax.swing.border.BevelBorder;
@@ -21,11 +23,12 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import java.awt.Toolkit;
 
 
 public class MainWindow {
 
-	private JFrame frame;
+	private JFrame frmMazegeneratorV;
 	private JTextField textField_Width;
 	private JTextField textField_Height;
 	
@@ -55,7 +58,7 @@ public class MainWindow {
 			public void run() {
 				try {
 					MainWindow window = new MainWindow();
-					window.frame.setVisible(true);
+					window.frmMazegeneratorV.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -74,17 +77,18 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 1200, 900);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new MigLayout("", "[][grow]", "[grow]"));
+		frmMazegeneratorV = new JFrame();
+		frmMazegeneratorV.setTitle("MazeGenerator v1.0");
+		frmMazegeneratorV.setBounds(100, 100, 1200, 900);
+		frmMazegeneratorV.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmMazegeneratorV.getContentPane().setLayout(new MigLayout("", "[][grow]", "[grow]"));
 		
 		JPanel MazeDisplay = new JPanel();
-		frame.getContentPane().add(MazeDisplay, "cell 1 0,grow");
+		frmMazegeneratorV.getContentPane().add(MazeDisplay, "cell 1 0,grow");
 		MazeDisplay.setLayout(new BoxLayout(MazeDisplay, BoxLayout.X_AXIS));
 		
 		JPanel Parameters = new JPanel();
-		frame.getContentPane().add(Parameters, "cell 0 0,grow");
+		frmMazegeneratorV.getContentPane().add(Parameters, "cell 0 0,grow");
 		Parameters.setLayout(new MigLayout("", "[][][100,grow]", "[20px][][20px][20px][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		
 		grid = new MainClass.Grid();
@@ -208,6 +212,7 @@ public class MainWindow {
 						try {
 							MainClass.tileSize = Integer.parseInt(textField_TileSize.getText());
 							JFileChooser fileopen = new JFileChooser();
+							fileopen.setFileFilter(new FileNameExtensionFilter(".maze","maze"));
 							int ret = fileopen.showDialog(null, "Load maze");                
 			                if (ret == JFileChooser.APPROVE_OPTION) {
 								File mazeFile = fileopen.getSelectedFile();
@@ -228,6 +233,7 @@ public class MainWindow {
 						//Saving methods
 						try {
 							JFileChooser fileopen = new JFileChooser();
+							fileopen.setFileFilter(new FileNameExtensionFilter(".maze","maze"));
 			                int ret = fileopen.showDialog(null, "Save maze");                
 			                if (ret == JFileChooser.APPROVE_OPTION) {
 			                	File mazeFile = new File(fileopen.getSelectedFile().getPath() + ".maze");
