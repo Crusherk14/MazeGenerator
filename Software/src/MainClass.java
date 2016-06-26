@@ -1,3 +1,27 @@
+/* 
+ * By reading any further information you agree with terms of it's usage:
+ * Unauthorized using or copying of this file is strictly prohibited
+ *
+ * Written by team: Kolesnikov Mikhail, Ilyin Evgeniy, Bogdanov Maksim, Makarov Pavel
+ * Source code was specially created within the "Basics of Programming" of ITMO University (1st Course, 2nd Term)
+ * February 2016 - July 2016
+ *
+ * For any further questions contact authors on GitHub repository <https://github.com/Crusherk14/MazeGenerator>
+ */
+
+/* 
+ * Продолжая прочтение информации, изложенной в данном документе, Вы соглашаетесь с правилами её дальнейшего использования:
+ * Незаконное использование в личных целях или распространение документа без ведома правообладателя запрещено
+ * Является собственностью автора(-ов)
+ *
+ * Авторы: Колесников Михаил, Ильин Евгений, Богданов Максим, Макаров Павел
+ * Исходный код проекта написан специально в рамках семестрового проекта по дисциплине "Основы Программирования" Университета ИТМО (1ый Курс, 2ой Семестр)
+ * Февраль 2016 - Июль 2016
+ *
+ * По всем возникшим вопросам обращаться к создателям репозитория на GitHub <https://github.com/Crusherk14/MazeGenerator>
+ */
+
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
