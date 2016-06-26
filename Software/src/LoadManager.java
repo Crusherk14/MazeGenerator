@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class LoadManager {
 	
@@ -79,6 +80,8 @@ public class LoadManager {
 				}
 			}
 		}
+		dis.close();
+		fis.close();
 		return tilesArray;
 	}
 	
@@ -122,13 +125,20 @@ public class LoadManager {
 					}
 					case("cross"): {
 						fos.write(8);
+						/*
+						if (MainClass.tilesArray[posY][posX].getPaths().indexOf(MainClass.pathsArray.get(0)) != -1){
+							fos.write(11);
+						}else{
+							fos.write(8);
+						}
+						*/
 						break;
 					}
 					default:
-						
 				}
 			}
 		}
+		dos.close();
 		fos.close();
 	}
 }

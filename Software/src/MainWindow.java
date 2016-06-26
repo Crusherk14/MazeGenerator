@@ -8,8 +8,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.MaskFormatter;
 
 import java.io.File;
 import javax.swing.border.BevelBorder;
@@ -20,10 +20,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
-import java.awt.Toolkit;
+import javax.swing.JFormattedTextField;
 
 
 public class MainWindow {
@@ -106,20 +108,12 @@ public class MainWindow {
 				MainClass.tileSize = Integer.parseInt(textField_TileSize.getText());
 				MainClass.mazeSizeWidth = Integer.parseInt(textField_Width.getText());
 				MainClass.mazeSizeHeight = Integer.parseInt(textField_Height.getText());
-				//MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
+				MainClass.generationDelay = Integer.parseInt(textField_GenerationDelay.getText());
 				
 				
 				if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
 					grid.clearData();
 					task.cancel(true);
-					
-					
-					/*
-					while (!task.isCancelled()){
-						task.cancel(true);
-						//wait for task to stop
-					}
-					*/
 				}
 				
 				grid = new MainClass.Grid();
@@ -128,6 +122,8 @@ public class MainWindow {
 				
 				task = new aTask();
 				task.execute();
+				
+				chckbxShowAnswer.setEnabled(true);
 			}
 		});
 		Parameters.add(btnNewButton, "cell 0 0 3 1,growx,aligny center");
@@ -160,7 +156,7 @@ public class MainWindow {
 		Parameters.add(textField_Height, "cell 2 3,growx,aligny top");
 		textField_Height.setColumns(10);
 		
-		lblPathlength = new JLabel("PathLength (%)");
+		lblPathlength = new JLabel("PathLength (1-10%)");
 		Parameters.add(lblPathlength, "cell 0 4,alignx center");
 		
 		textField_PathLength = new JTextField();
@@ -174,10 +170,9 @@ public class MainWindow {
 		
 		lblGenerationdelay = new JLabel("GenerationDelay (ms)");
 		Parameters.add(lblGenerationdelay, "cell 0 7,alignx center");
-		
 		textField_GenerationDelay = new JTextField();
 		textField_GenerationDelay.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_GenerationDelay.setText("5");
+		textField_GenerationDelay.setText("20");
 		Parameters.add(textField_GenerationDelay, "cell 2 7,growx");
 		textField_GenerationDelay.setColumns(10);
 		textField_GenerationDelay.getDocument().addDocumentListener(new DocumentListener() {
@@ -220,12 +215,20 @@ public class MainWindow {
 				btnLoadFrom.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						//Loading methods
+						
+						//Stop generation
+						if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
+							task.cancel(true);
+						}
+						
+						//Load
 						try {
 							MainClass.tileSize = Integer.parseInt(textField_TileSize.getText());
 							JFileChooser fileopen = new JFileChooser();
 							fileopen.setFileFilter(new FileNameExtensionFilter(".maze","maze"));
 							int ret = fileopen.showDialog(null, "Load maze");                
 			                if (ret == JFileChooser.APPROVE_OPTION) {
+			                	grid.clearData();
 								File mazeFile = fileopen.getSelectedFile();
 								MainClass.tilesArray = LoadManager.loadFile(mazeFile);
 								generator.updateUI();
@@ -234,6 +237,10 @@ public class MainWindow {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						
+						//Block
+						chckbxShowAnswer.setSelected(false);
+						chckbxShowAnswer.setEnabled(false);
 					}
 				});
 				
@@ -242,6 +249,13 @@ public class MainWindow {
 				btnSaveTo.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						//Saving methods
+						
+						//Stop generation
+						if ((task.getState() == SwingWorker.StateValue.STARTED)&&(task.getState() != SwingWorker.StateValue.DONE)){
+							task.cancel(true);
+						}
+						
+						//Save
 						try {
 							JFileChooser fileopen = new JFileChooser();
 							fileopen.setFileFilter(new FileNameExtensionFilter(".maze","maze"));

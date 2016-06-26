@@ -36,7 +36,7 @@ public class PathClass {
 	public ArrayList<TileClass> getCrossings(){
 		return intersections;
 	}
-	
+	/*
 	public int countDistanceFromLastIntersection(){
 		TileClass lastCrossTile = tiles.get(0);
 		for (TileClass cTile : tiles){
@@ -46,4 +46,5 @@ public class PathClass {
 		}
 		return tiles.size()-tiles.indexOf(lastCrossTile)-1;
 	}
+	*/
 }

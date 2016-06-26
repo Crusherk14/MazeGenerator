@@ -237,7 +237,7 @@ public class MainClass {
 	    	
 	    	updateUI();
 	    	
-	    	setWalls(cTile);
+	    	//setWalls(cTile);
 	    }
 		 
 		 public void generatePath(TileClass fromTile,int length){
@@ -253,7 +253,8 @@ public class MainClass {
 				 TileClass newTile = generateNextTile(cTile,cPath);
 				 if (newTile == cTile) {break;}
 				 else{
-					 generateIntersection(cPath,cTile);
+					 //generateIntersection(cPath,cTile);
+					 setWalls(cTile);
 					 
 					 cTile = newTile;
 					 cPath.addTile(newTile);
@@ -265,6 +266,7 @@ public class MainClass {
 			 cTile.assignPath(cPath, cPath.getTiles().get(cPath.getTiles().size()-2).getDirection(cPath));
 			 System.out.println("[PATH] Finishing path#"+cPath.getID());
 			 if (cPath.getID()==0){setFinishPoint(cPath.getTiles().get(cPath.getLength()-1));}
+			 generateIntersections(cPath);
 			 generateSubPaths();
 		 }
 		 
@@ -513,6 +515,7 @@ public class MainClass {
 		 }
 		 
 		 //Generates intersections and walls
+		 /*
 		 public void generateIntersection(PathClass cPath, TileClass cTile){
 			 int pathLength = cPath.getLength();
 			 int distanceFrom = cPath.countDistanceFromLastIntersection();
@@ -531,7 +534,38 @@ public class MainClass {
 				 System.out.println("[CROSS] Generating new intersection at: "+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
 				 
 			 }
-			 setWalls(cTile);
+		 }
+		 */
+		 
+		 public void generateIntersections(PathClass cPath){
+			 int pathLength = cPath.getLength();
+			 System.out.println("[CROSS] Path length: "+pathLength);
+			 
+			 //ArrayList<TileClass> pathTiles = cPath.getTiles();
+			 
+			 int distanceFrom = 0;
+			 
+			 
+			 for (TileClass cTile : cPath.getTiles()) {
+				 double crossingChance = (double) distanceFrom/pathLength*90;
+				 if (cTile.getState()=="turn"){crossingChance+=10;}
+				 
+				 if (getSurroundTiles(cTile, new String[]{"empty","wall"}).size() < 1){crossingChance = 0;}	//(...size() < 2) before editing
+				 if ((cTile.getState() == "start") || (cTile.getState() == "finish")){crossingChance = 0;}
+				 
+				 System.out.println("[CROSS] Distance from this tile to last intersection:"+distanceFrom);
+				 System.out.println("[CROSS] Chance for this tile:"+crossingChance);
+				 
+				 distanceFrom +=1;
+				 int roll = 1+random.nextInt(99);
+				 if (roll <= crossingChance){
+					 cTile.setState("cross");
+					 cPath.addCrossing(cTile);
+					 System.out.println("[CROSS] Generating new intersection at: "+cTile.getCoords()[0]+":"+cTile.getCoords()[1]);
+					 updateUI();
+					 distanceFrom = 0;
+				 }
+			 }
 		 }
 		 
 		 public void generateSubPaths(){
